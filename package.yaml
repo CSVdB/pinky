@@ -1,0 +1,49 @@
+name:                my-neural-nets
+version:             0.0.0.0
+synopsis:            Neural network library in Haskell
+description:         Please see the README on GitHub at <https://github.com/Nickske666/my-neural-nets#readme>
+category:            Data science
+github:              "NickVdB/my-neural-nets"
+license:             BSD3
+author:              "Nick Van den Broeck"
+maintainer:          nick.van.den.broeck@hotmail.com
+copyright:           "2018 Nick Van den Broeck"
+
+extra-source-files:
+- README.md
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  default-extensions:
+  - NoImplicitPrelude
+  exposed-modules:
+  - Neural
+
+executables:
+  my-neural-nets-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - my-neural-nets
+
+tests:
+  my-neural-nets-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - my-neural-nets
+    - hspec
