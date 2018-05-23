@@ -28,6 +28,7 @@ library:
   - Import
   - ValidityUtils
   - Neural
+  - Neural.Shape
   - Neural.LinearAlgebra
   - Neural.LinearAlgebra.Internal
 
@@ -63,3 +64,5 @@ tests:
     - TestUtils
     - Neural.LinearAlgebra.Gen
     - Neural.LinearAlgebra.InstanceSpec
+    - Neural.Shape.Gen
+    - Neural.Shape.InstanceSpec
