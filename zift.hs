@@ -3,7 +3,7 @@
     --install-ghc
     runghc
     --nix
-    --package zifter
+    --package zifter-0.0.1.8
     --package zifter-git
     --package zifter-hindent
     --package zifter-hlint
