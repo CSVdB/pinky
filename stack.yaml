@@ -1,3 +1,17 @@
 packages:
 - .
 resolver: lts-10.0
+nix:
+  enable: true
+  packages: [blas, liblapack, gfortran.cc.lib]
+extra-deps:
+- hmatrix-0.19.0.0
+- genvalidity-0.4.0.4
+#- genvalidity-0.5.0.3
+- genvalidity-hspec-0.5.0.0
+#- genvalidity-hspec-0.6.0.3
+- genvalidity-property-0.1.0.0
+#- genvalidity-property-0.2.0.2
+- QuickCheck-2.11.3
+- validity-0.4.0.4
+#- validity-0.6.0.0
