@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -12,20 +11,11 @@ import Test.Validity
 import TestImport
 
 import Neural
+import Neural.Spec.Gen ()
 
 import System.Random
 
 import Data.Typeable
-
-instance Validity StdGen where
-    validate = trivialValidation
-
-instance GenUnchecked StdGen where
-    genUnchecked = mkStdGen <$> genUnchecked
-    shrinkUnchecked = const []
-
-instance GenValid StdGen where
-    genValid = mkStdGen <$> genValid
 
 createRandomSpec ::
        forall a. (CreateRandom a, Validity a, Typeable a, Show a)

@@ -38,6 +38,7 @@ library:
   - Neural.HyperParams
   - Neural.HyperParams.Internal
   - Neural.CreateRandom
+  - Neural.Layer
 
 executables:
   my-neural-nets-exe:
@@ -76,3 +77,5 @@ tests:
     - Neural.Utils.Gen
     - Neural.Utils.InstanceSpec
     - Neural.Spec.CreateRandom
+    - Neural.Spec.Layer
+    - Neural.Spec.Gen
