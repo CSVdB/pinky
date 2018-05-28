@@ -5,4 +5,4 @@ module Neural.LinearAlgebra
     , ( #> )
     ) where
 
-import Neural.Internal.LinearAlgebra
+import Neural.LinearAlgebra.Internal

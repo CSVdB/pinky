@@ -7,7 +7,7 @@ module Neural.PositiveDouble
 
 import Import
 
-import Neural.Internal.PositiveDouble
+import Neural.PositiveDouble.Internal
 
 pMultiply :: PositiveDouble -> PositiveDouble -> Either String PositiveDouble
 pMultiply x y = constructPositiveDouble $ posToDouble x * posToDouble y

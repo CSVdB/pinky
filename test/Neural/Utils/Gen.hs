@@ -5,7 +5,7 @@ module Neural.Utils.Gen where
 import TestImport
 
 import Neural
-import Neural.Internal.PositiveDouble
+import Neural.PositiveDouble.Internal
 
 instance GenUnchecked PositiveDouble where
     genUnchecked = PositiveDouble <$> genUnchecked

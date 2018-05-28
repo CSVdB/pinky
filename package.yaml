@@ -30,8 +30,8 @@ library:
   - Neural.Shape
   - Neural.LinearAlgebra
   - Neural.PositiveDouble
-  - Neural.Internal.PositiveDouble
-  - Neural.Internal.LinearAlgebra
+  - Neural.PositiveDouble.Internal
+  - Neural.LinearAlgebra.Internal
 
 executables:
   my-neural-nets-exe:

@@ -7,7 +7,7 @@ module Neural.LinearAlgebra.Gen where
 import TestImport
 import TestUtils
 
-import Neural.Internal.LinearAlgebra
+import Neural.LinearAlgebra.Internal
 
 import qualified Data.Vector.Storable as SV
 import Numeric.LinearAlgebra.Data (reshape)
