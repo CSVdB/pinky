@@ -11,6 +11,7 @@ import Data.Maybe as X
 import Data.Proxy as X
 import Data.Singletons as X
 import Data.Singletons.TypeLits as X
+import Data.Validity as X ()
 
 import GHC.Natural as X
 import GHC.TypeLits as X

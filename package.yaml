@@ -15,6 +15,7 @@ extra-source-files:
 dependencies:
 - base >= 4.7 && < 5
 - hmatrix >= 0.19
+- random
 - singletons
 - validity >= 0.4.0.4
 - vector
@@ -36,6 +37,7 @@ library:
   - Neural.ProperFraction.Internal
   - Neural.HyperParams
   - Neural.HyperParams.Internal
+  - Neural.CreateRandom
 
 executables:
   my-neural-nets-exe:
@@ -73,3 +75,4 @@ tests:
     - Neural.LinearAlgebra.InstanceSpec
     - Neural.Utils.Gen
     - Neural.Utils.InstanceSpec
+    - Neural.Spec.CreateRandom
