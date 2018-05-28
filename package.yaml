@@ -71,7 +71,5 @@ tests:
     - Neural.Core.InstanceSpec
     - Neural.LinearAlgebra.Gen
     - Neural.LinearAlgebra.InstanceSpec
-    - Neural.Shape.Gen
-    - Neural.Shape.InstanceSpec
     - Neural.Utils.Gen
     - Neural.Utils.InstanceSpec
