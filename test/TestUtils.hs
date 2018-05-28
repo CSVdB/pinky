@@ -4,7 +4,8 @@
 
 module TestUtils where
 
-import TestImport
+import Data.Proxy
+import GHC.TypeLits
 
 natToInt ::
        forall n. KnownNat n

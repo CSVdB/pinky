@@ -6,7 +6,7 @@ import Import
 
 newtype PositiveDouble =
     PositiveDouble Double
-    deriving (Show, Eq, Generic)
+    deriving (Show, Eq, Ord, Generic)
 
 constructPositiveDouble :: Double -> Either String PositiveDouble
 constructPositiveDouble = prettyValidation . PositiveDouble
@@ -24,3 +24,6 @@ instance Monoid PositiveDouble where
 
 posToDouble :: PositiveDouble -> Double
 posToDouble (PositiveDouble x) = x
+
+posOne :: PositiveDouble
+posOne = PositiveDouble 1

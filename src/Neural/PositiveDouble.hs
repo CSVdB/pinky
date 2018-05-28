@@ -3,6 +3,7 @@ module Neural.PositiveDouble
     , constructPositiveDouble
     , pMultiply
     , posToDouble
+    , posOne
     ) where
 
 import Import
