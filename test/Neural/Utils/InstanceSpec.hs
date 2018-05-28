@@ -10,4 +10,8 @@ import Test.Hspec
 import Test.Validity
 
 spec :: Spec
-spec = genValidSpec @PositiveDouble
+spec = do
+    eqSpec @PositiveDouble
+    genValidSpec @PositiveDouble
+    eqSpec @ProperFraction
+    genValidSpec @ProperFraction

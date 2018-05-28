@@ -29,9 +29,11 @@ library:
   - Neural
   - Neural.Shape
   - Neural.LinearAlgebra
+  - Neural.LinearAlgebra.Internal
   - Neural.PositiveDouble
   - Neural.PositiveDouble.Internal
-  - Neural.LinearAlgebra.Internal
+  - Neural.ProperFraction
+  - Neural.ProperFraction.Internal
 
 executables:
   my-neural-nets-exe:

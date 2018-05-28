@@ -14,7 +14,7 @@ constructPositiveDouble = prettyValidation . PositiveDouble
 instance Validity PositiveDouble where
     validate (PositiveDouble x) =
         mconcat
-            [ delve "A PositiveDouble must be a valid Double" x
+            [ delve "A PositiveDouble contains a valid Double" x
             , declare "A PositiveDouble is positive" $ x >= 0
             ]
 
