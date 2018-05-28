@@ -29,15 +29,14 @@ constructHyperParams rate dr mom reg =
 instance Validity HyperParams where
     validate HyperParams {..} =
         let valProd =
-                case pMultiply hyperRate hyperRegulator of
+                case (< posOne) <$> pMultiply hyperRate hyperRegulator of
                     Left errMess ->
                         invalidOnPos "hyperRate * hyperRegulator" errMess
-                    Right x ->
-                        if x < posOne
-                            then valid
-                            else invalidOnPos
-                                     "hyperRate * hyperRegulator"
-                                     "Is smaller than 1"
+                    Right True -> valid
+                    Right False ->
+                        invalidOnPos
+                            "hyperRate * hyperRegulator"
+                            "Is smaller than 1"
          in valProd <>
             mconcat
                 [ delve "hyperRate" hyperRate
