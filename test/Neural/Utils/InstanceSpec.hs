@@ -12,6 +12,8 @@ import Test.Validity
 spec :: Spec
 spec = do
     eqSpec @PositiveDouble
+    ordSpec @PositiveDouble
     genValidSpec @PositiveDouble
     eqSpec @ProperFraction
+    ordSpec @ProperFraction
     genValidSpec @ProperFraction

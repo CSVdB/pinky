@@ -6,7 +6,7 @@ import Import
 
 newtype ProperFraction =
     ProperFraction Double
-    deriving (Show, Eq, Generic)
+    deriving (Show, Eq, Ord, Generic)
 
 constructProperFraction :: Double -> Either String ProperFraction
 constructProperFraction = prettyValidation . ProperFraction
