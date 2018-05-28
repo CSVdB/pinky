@@ -29,7 +29,7 @@ library:
   - Neural
   - Neural.Shape
   - Neural.LinearAlgebra
-  - Neural.LinearAlgebra.Internal
+  - Neural.Internal.LinearAlgebra
 
 executables:
   my-neural-nets-exe:

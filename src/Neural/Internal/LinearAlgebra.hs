@@ -4,7 +4,7 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE DataKinds #-}
 
-module Neural.LinearAlgebra.Internal where
+module Neural.Internal.LinearAlgebra where
 
 import Import
 
