@@ -29,6 +29,8 @@ library:
   - Neural
   - Neural.Shape
   - Neural.LinearAlgebra
+  - Neural.PositiveDouble
+  - Neural.Internal.PositiveDouble
   - Neural.Internal.LinearAlgebra
 
 executables:
@@ -65,3 +67,5 @@ tests:
     - Neural.LinearAlgebra.InstanceSpec
     - Neural.Shape.Gen
     - Neural.Shape.InstanceSpec
+    - Neural.Utils.Gen
+    - Neural.Utils.InstanceSpec
