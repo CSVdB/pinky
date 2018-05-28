@@ -2,8 +2,6 @@
 
 module Neural.Core.InstanceSpec where
 
-import TestImport
-
 import Neural
 
 import Neural.Core.Gen ()

@@ -5,7 +5,7 @@ module Neural.Core.Gen where
 import TestImport
 
 import Neural
-import Neural.Utils.Gen
+import Neural.Utils.Gen ()
 
 instance GenUnchecked Natural where
     genUnchecked = naturalFromInteger . abs <$> genUnchecked

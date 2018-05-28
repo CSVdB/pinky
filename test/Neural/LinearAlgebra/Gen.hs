@@ -5,7 +5,6 @@
 module Neural.LinearAlgebra.Gen where
 
 import TestImport
-import TestUtils
 
 import Neural.LinearAlgebra.Internal
 
