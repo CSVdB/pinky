@@ -1,8 +1,8 @@
 module Neural
-    ( module Neural.Utils
-    , module Neural.CreateRandom
+    ( module Neural.CreateRandom
     , module Neural.Core
     , module Neural.Layers
+    , module Neural.Utils
     ) where
 
 import Neural.Core
