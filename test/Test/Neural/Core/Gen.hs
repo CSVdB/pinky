@@ -1,6 +1,10 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Test.Neural.Core.Gen where
 
@@ -46,3 +50,29 @@ instance SingI x => GenValid (S x) where
             D1Sing SNat -> S1D <$> genValid
             D2Sing SNat SNat -> S2D <$> genValid
             D3Sing SNat SNat SNat -> S3D <$> genValid
+
+instance SingI i => GenUnchecked (Network '[] '[ i]) where
+    genUnchecked = pure EmptyNet
+    shrinkUnchecked = const []
+
+instance ( GenUnchecked x
+         , SingI i
+         , SingI m
+         , Layer x i m
+         , GenUnchecked (Network xs (m ': ss))
+         ) =>
+         GenUnchecked (Network (x ': xs) (i ': (m ': ss))) where
+    genUnchecked = AppendNet <$> genUnchecked <*> genUnchecked
+    shrinkUnchecked = const []
+
+instance SingI i => GenValid (Network '[] '[ i]) where
+    genValid = pure EmptyNet
+
+instance ( GenValid x
+         , SingI i
+         , SingI m
+         , Layer x i m
+         , GenValid (Network xs (m ': ss))
+         ) =>
+         GenValid (Network (x ': xs) (i ': (m ': ss))) where
+    genValid = AppendNet <$> genValid <*> genValid
