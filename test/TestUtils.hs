@@ -2,6 +2,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module TestUtils where
 
@@ -27,7 +28,15 @@ typeToName ::
     => String
 typeToName = show . typeRep $ Proxy @a
 
-type I = 5
+type Xdim = 5
+
+type Ydim = 3
+
+type ImageShape = 'D2 Xdim Ydim
+
+type Image = S ImageShape
+
+type I = Xdim * Ydim
 
 type IShape = 'D1 I
 

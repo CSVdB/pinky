@@ -37,6 +37,7 @@ library:
   - Neural.Core.HyperParams.Internal
   - Neural.Layers
   - Neural.Layers.FullyConnected
+  - Neural.Layers.Reshape
   - Neural.Utils.PositiveDouble
   - Neural.Utils.PositiveDouble.Internal
   - Neural.Utils.ProperFraction
@@ -86,5 +87,6 @@ tests:
     - Test.Neural.Spec.Layer
     - Test.Neural.Spec.Gen
     - Test.Neural.Layers.FullyConnected
+    - Test.Neural.Layers.Reshape
     - Test.Neural.Layers.LayerSpec
     - Test.Neural.Layers.Gen

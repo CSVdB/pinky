@@ -3,12 +3,17 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Neural.Core.LinearAlgebra.Internal where
 
 import Import
 
 import Neural.CreateRandom
+import Neural.Utils.Proxy
 
 import System.Random
 
@@ -129,3 +134,15 @@ outerProd (V v) (V v') = M $ v `Hmatrix.outer` v'
 
 transpose :: (KnownNat m, KnownNat n) => M m n -> M n m
 transpose (M m) = M $ Hmatrix.tr m
+
+vToM ::
+       forall a b c. (KnownNat a, KnownNat b, KnownNat c, c ~ (a * b))
+    => V c
+    -> M a b
+vToM (V v) = unsafeToM . NLA.reshape (natToInt @b) $ Hmatrix.extract v
+
+mToV ::
+       forall a b c. (KnownNat a, KnownNat b, KnownNat c, c ~ (a * b))
+    => M a b
+    -> V c
+mToV (M m) = unsafeToV . NLA.flatten $ Hmatrix.extract m

@@ -9,6 +9,8 @@ module Neural.Core.LinearAlgebra
     , Plus
     , outerProd
     , transpose
+    , vToM
+    , mToV
     ) where
 
 import Neural.Core.LinearAlgebra.Internal
