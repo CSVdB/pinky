@@ -39,6 +39,9 @@ library:
   - Neural.HyperParams.Internal
   - Neural.CreateRandom
   - Neural.Layer
+  - Neural.Layers
+  - Neural.Layers.FullyConnected
+  - Neural.Proxy
 
 executables:
   my-neural-nets-exe:
@@ -56,6 +59,8 @@ tests:
   my-neural-nets-test:
     main:                Spec.hs
     source-dirs:         test
+    default-extensions:
+    - NoImplicitPrelude
     ghc-options:
     - -Wall
     - -threaded
@@ -70,12 +75,15 @@ tests:
     other-modules:
     - TestImport
     - TestUtils
-    - Neural.Core.Gen
-    - Neural.Core.InstanceSpec
-    - Neural.LinearAlgebra.Gen
-    - Neural.LinearAlgebra.InstanceSpec
-    - Neural.Utils.Gen
-    - Neural.Utils.InstanceSpec
-    - Neural.Spec.CreateRandom
-    - Neural.Spec.Layer
-    - Neural.Spec.Gen
+    - Test.Neural.Core.Gen
+    - Test.Neural.Core.InstanceSpec
+    - Test.Neural.LinearAlgebra.Gen
+    - Test.Neural.LinearAlgebra.InstanceSpec
+    - Test.Neural.Utils.Gen
+    - Test.Neural.Utils.InstanceSpec
+    - Test.Neural.Spec.CreateRandom
+    - Test.Neural.Spec.Layer
+    - Test.Neural.Spec.Gen
+    - Test.Neural.Layers.FullyConnected
+    - Test.Neural.Layers.LayerSpec
+    - Test.Neural.Layers.Gen

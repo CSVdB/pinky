@@ -1,12 +1,12 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE DataKinds #-}
 
-module Neural.Utils.InstanceSpec where
+module Test.Neural.Utils.InstanceSpec where
 
 import Neural
-import Neural.Utils.Gen ()
 
 import Test.Hspec
+import Test.Neural.Utils.Gen ()
 import Test.Validity
 
 spec :: Spec

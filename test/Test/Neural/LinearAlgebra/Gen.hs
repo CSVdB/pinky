@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Neural.LinearAlgebra.Gen where
+module Test.Neural.LinearAlgebra.Gen where
 
 import TestImport
 

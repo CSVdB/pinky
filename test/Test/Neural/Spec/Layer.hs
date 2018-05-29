@@ -8,17 +8,17 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Neural.Spec.Layer
+module Test.Neural.Spec.Layer
     ( layerSpec
     ) where
 
 import Test.Hspec
+import Test.Neural.Core.Gen ()
+import Test.Neural.Spec.Gen ()
 import Test.Validity
 import TestImport
 
 import Neural
-import Neural.Core.Gen ()
-import Neural.Spec.Gen ()
 
 import Data.Typeable
 

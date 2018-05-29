@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Neural.Spec.Gen where
+module Test.Neural.Spec.Gen where
 
 import TestImport
 

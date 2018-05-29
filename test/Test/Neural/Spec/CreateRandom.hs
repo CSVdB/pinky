@@ -2,16 +2,16 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module Neural.Spec.CreateRandom
+module Test.Neural.Spec.CreateRandom
     ( createRandomSpec
     ) where
 
+import Neural
+
 import Test.Hspec
+import Test.Neural.Spec.Gen ()
 import Test.Validity
 import TestImport
-
-import Neural
-import Neural.Spec.Gen ()
 
 import System.Random
 

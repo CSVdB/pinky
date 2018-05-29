@@ -2,13 +2,13 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Neural.Core.Gen where
+module Test.Neural.Core.Gen where
 
 import TestImport
 
 import Neural
-import Neural.LinearAlgebra.Gen ()
-import Neural.Utils.Gen ()
+import Test.Neural.LinearAlgebra.Gen ()
+import Test.Neural.Utils.Gen ()
 
 instance GenUnchecked Natural where
     genUnchecked = naturalFromInteger . abs <$> genUnchecked
