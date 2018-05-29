@@ -9,7 +9,6 @@ import Prelude
 
 import Neural
 
-import Data.Proxy
 import Data.Typeable
 
 import GHC.TypeLits

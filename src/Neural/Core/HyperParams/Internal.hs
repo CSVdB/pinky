@@ -1,12 +1,11 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Neural.HyperParams.Internal where
+module Neural.Core.HyperParams.Internal where
 
 import Import
 
-import Neural.PositiveDouble
-import Neural.ProperFraction
+import Neural.Utils
 
 data HyperParams = HyperParams
     { hyperRate :: PositiveDouble

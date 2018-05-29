@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Neural.PositiveDouble.Internal where
+module Neural.Utils.PositiveDouble.Internal where
 
 import Import
 

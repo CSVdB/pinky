@@ -9,13 +9,9 @@ module Neural.Layers.FullyConnected where
 
 import Import
 
+import Neural.Core
 import Neural.CreateRandom
-import Neural.HyperParams
-import Neural.Layer
-import Neural.LinearAlgebra
-import Neural.PositiveDouble
-import Neural.ProperFraction
-import Neural.Shape
+import Neural.Utils.PositiveDouble
 
 data FullyConnected (i :: Nat) (o :: Nat) = FullyConnected
     { biases :: V o

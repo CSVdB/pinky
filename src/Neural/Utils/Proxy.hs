@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module Neural.Proxy where
+module Neural.Utils.Proxy where
 
 import Import
 

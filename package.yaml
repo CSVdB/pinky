@@ -28,20 +28,20 @@ library:
   exposed-modules:
   - Import
   - Neural
-  - Neural.Shape
-  - Neural.LinearAlgebra
-  - Neural.LinearAlgebra.Internal
-  - Neural.PositiveDouble
-  - Neural.PositiveDouble.Internal
-  - Neural.ProperFraction
-  - Neural.ProperFraction.Internal
-  - Neural.HyperParams
-  - Neural.HyperParams.Internal
-  - Neural.CreateRandom
-  - Neural.Layer
+  - Neural.Core.Shape
+  - Neural.Core.LinearAlgebra
+  - Neural.Core.LinearAlgebra.Internal
+  - Neural.Core.Layer
+  - Neural.Core.HyperParams
+  - Neural.Core.HyperParams.Internal
   - Neural.Layers
   - Neural.Layers.FullyConnected
-  - Neural.Proxy
+  - Neural.Utils.PositiveDouble
+  - Neural.Utils.PositiveDouble.Internal
+  - Neural.Utils.ProperFraction
+  - Neural.Utils.ProperFraction.Internal
+  - Neural.Utils.Proxy
+  - Neural.CreateRandom
 
 executables:
   my-neural-nets-exe:
@@ -77,8 +77,8 @@ tests:
     - TestUtils
     - Test.Neural.Core.Gen
     - Test.Neural.Core.InstanceSpec
-    - Test.Neural.LinearAlgebra.Gen
-    - Test.Neural.LinearAlgebra.InstanceSpec
+    - Test.Neural.Core.LinearAlgebraGen
+    - Test.Neural.Core.LinearAlgebraSpec
     - Test.Neural.Utils.Gen
     - Test.Neural.Utils.InstanceSpec
     - Test.Neural.Spec.CreateRandom

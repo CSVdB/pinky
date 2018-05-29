@@ -5,8 +5,8 @@ module Test.Neural.Utils.Gen where
 import TestImport
 
 import Neural
-import Neural.PositiveDouble.Internal
-import Neural.ProperFraction.Internal
+import Neural.Utils.PositiveDouble.Internal
+import Neural.Utils.ProperFraction.Internal
 
 import Test.QuickCheck
 

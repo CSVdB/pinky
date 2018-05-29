@@ -4,13 +4,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Neural.Layer where
+module Neural.Core.Layer where
 
 import Import
 
+import Neural.Core.HyperParams
+import Neural.Core.Shape
 import Neural.CreateRandom
-import Neural.HyperParams
-import Neural.Shape
 
 data Momentum x = Momentum
     { parameters :: x

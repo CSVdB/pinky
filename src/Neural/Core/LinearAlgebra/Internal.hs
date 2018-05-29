@@ -4,12 +4,11 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Neural.LinearAlgebra.Internal where
+module Neural.Core.LinearAlgebra.Internal where
 
 import Import
 
 import Neural.CreateRandom
-import Neural.Proxy
 
 import System.Random
 

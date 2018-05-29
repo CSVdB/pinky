@@ -1,4 +1,4 @@
-module Neural.HyperParams
+module Neural.Core.HyperParams
     ( HyperParams
     , constructHyperParams
     , hyperRate
@@ -8,4 +8,4 @@ module Neural.HyperParams
     , hyperBatchSize
     ) where
 
-import Neural.HyperParams.Internal
+import Neural.Core.HyperParams.Internal

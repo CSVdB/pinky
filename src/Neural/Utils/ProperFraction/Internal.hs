@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Neural.ProperFraction.Internal where
+module Neural.Utils.ProperFraction.Internal where
 
 import Import
 

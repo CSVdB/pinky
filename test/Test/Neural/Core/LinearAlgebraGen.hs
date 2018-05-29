@@ -2,11 +2,11 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Test.Neural.LinearAlgebra.Gen where
+module Test.Neural.Core.LinearAlgebraGen where
 
 import TestImport
 
-import Neural.LinearAlgebra.Internal
+import Neural.Core.LinearAlgebra.Internal
 
 import qualified Data.Vector.Storable as SV
 import Numeric.LinearAlgebra.Data (reshape)

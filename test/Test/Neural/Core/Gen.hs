@@ -4,14 +4,14 @@
 
 module Test.Neural.Core.Gen where
 
+import Test.Neural.Core.LinearAlgebraGen ()
+import Test.Neural.Utils.Gen ()
 import Test.QuickCheck
 import TestImport
 
 import Neural
-import Neural.HyperParams.Internal
-import Neural.PositiveDouble.Internal
-import Test.Neural.LinearAlgebra.Gen ()
-import Test.Neural.Utils.Gen ()
+import Neural.Core.HyperParams.Internal
+import Neural.Utils.PositiveDouble.Internal
 
 instance GenUnchecked Natural where
     genUnchecked = naturalFromInteger . abs <$> genUnchecked

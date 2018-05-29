@@ -1,4 +1,4 @@
-module Neural.LinearAlgebra
+module Neural.Core.LinearAlgebra
     ( V
     , M
     , (<#>)
@@ -11,4 +11,4 @@ module Neural.LinearAlgebra
     , transpose
     ) where
 
-import Neural.LinearAlgebra.Internal
+import Neural.Core.LinearAlgebra.Internal

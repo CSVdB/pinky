@@ -3,12 +3,12 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 
-module Test.Neural.LinearAlgebra.InstanceSpec where
+module Test.Neural.Core.LinearAlgebraSpec where
 
-import Neural.LinearAlgebra
+import Neural
 
 import Test.Hspec
-import Test.Neural.LinearAlgebra.Gen ()
+import Test.Neural.Core.LinearAlgebraGen ()
 import Test.Validity
 import TestImport
 

@@ -6,11 +6,11 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
-module Neural.Shape where
+module Neural.Core.Shape where
 
 import Import
 
-import Neural.LinearAlgebra
+import Neural.Core.LinearAlgebra
 
 data Shape
     = D1 Nat

@@ -2,7 +2,7 @@
 
 module Test.Neural.Layers.FullyConnected where
 
-import Test.Neural.LinearAlgebra.Gen ()
+import Test.Neural.Core.LinearAlgebraGen ()
 import TestImport
 
 import Neural

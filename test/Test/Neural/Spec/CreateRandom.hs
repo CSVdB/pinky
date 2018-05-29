@@ -15,8 +15,6 @@ import TestImport
 
 import System.Random
 
-import Data.Typeable
-
 createRandomSpec ::
        forall a. (CreateRandom a, Validity a, Typeable a, Show a)
     => Spec

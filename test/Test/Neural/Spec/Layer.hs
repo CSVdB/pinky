@@ -20,8 +20,6 @@ import TestImport
 
 import Neural
 
-import Data.Typeable
-
 import System.Random
 
 instance Validity x => Validity (Gradient x)
