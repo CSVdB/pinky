@@ -4,9 +4,12 @@
 
 module Test.Neural.Core.Gen where
 
+import Test.QuickCheck
 import TestImport
 
 import Neural
+import Neural.HyperParams.Internal
+import Neural.PositiveDouble.Internal
 import Test.Neural.LinearAlgebra.Gen ()
 import Test.Neural.Utils.Gen ()
 
@@ -20,14 +23,14 @@ instance GenValid Natural where
 instance GenUnchecked HyperParams
 
 instance GenValid HyperParams where
-    genValid = do
-        rate <- genValid
-        dr <- genValid
-        mom <- genValid
-        reg <- genValid
-        bs <- genValid
-        fromMaybe <$> genValid <*>
-            pure (eitherToMaybe $ constructHyperParams rate dr mom reg bs)
+    genValid = gen `suchThat` isValid
+      where
+        gen = do
+            rate <- genValid
+            dr <- genValid
+            mom <- genValid
+            reg <- PositiveDouble <$> choose (0, posToDouble rate)
+            HyperParams rate dr mom reg <$> genValid
 
 instance SingI x => GenUnchecked (S x) where
     genUnchecked =
