@@ -17,6 +17,7 @@ dependencies:
 - hmatrix >= 0.19
 - random
 - singletons
+- split
 - validity >= 0.4.0.4
 - vector
 
@@ -46,6 +47,7 @@ library:
   - Neural.Utils.Proxy
   - Neural.CreateRandom
   - Neural.ParamOpt.DataSet
+  - Neural.ParamOpt.Train
 
 executables:
   my-neural-nets-exe:

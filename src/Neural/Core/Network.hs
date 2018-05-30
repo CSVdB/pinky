@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
@@ -13,7 +14,8 @@ module Neural.Core.Network
     ( Network(..)
     , (<:>)
     , Tapes(..)
-    , train
+    , getGradientOfNetwork
+    , applyGradientToNetwork
     ) where
 
 import Import
@@ -143,17 +145,15 @@ instance ( CreateRandom (Network layers shapes)
     runForwards = runNetwork
     runBackwards = networkGradient
 
-train ::
+getGradientOfNetwork ::
        (i ~ Head shapes, o ~ Last shapes)
     => Network layers shapes
     -> S i
     -> S o
-    -> HyperParams
-    -> Network layers shapes
-train net inpt label hp =
-    let (tapes, outpt) = runNetwork net inpt
-        grads = fst $ networkGradient net tapes $ sumSquareError' outpt label
-     in applyGradientToNetwork net grads hp
+    -> Gradient (Network layers shapes)
+getGradientOfNetwork net inpt label =
+    let (!tapes, !outpt) = runNetwork net inpt
+     in fst $ networkGradient net tapes $ sumSquareError' outpt label
 
 -- The derivative of the cost function as evaluated on output and label
 sumSquareError' :: S o -> S o -> S o

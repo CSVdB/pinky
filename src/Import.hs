@@ -8,6 +8,7 @@ import GHC.Generics as X hiding (S)
 import GHC.Natural as X
 import GHC.TypeLits as X
 
+import Data.List as X hiding (transpose)
 import Data.Maybe as X
 import Data.Monoid as X hiding (Last)
 import Data.Singletons as X
