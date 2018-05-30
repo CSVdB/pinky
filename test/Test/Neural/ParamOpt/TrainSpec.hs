@@ -14,8 +14,6 @@ import Test.Neural.Layers.Gen ()
 
 import Control.Monad.State.Lazy
 
-import qualified Data.List.NonEmpty as NEL
-
 spec :: Spec
 spec = do
     describe
@@ -35,11 +33,7 @@ spec = do
         it "produces valids on valids" $
         forAllValid @NNet $ \net ->
             forAllValid $ \dataset ->
-                forAllValid $ \hp -> do
-                    print net
-                    print dataset
-                    print $ NEL.length dataset
-                    print hp
+                forAllValid $ \hp ->
                     shouldBeValid $ flip evalState hp $ runIteration net dataset
     describe
         "trainNetwork :: NNet -> DataSet -> Natural -> State HyperParams NNet" $

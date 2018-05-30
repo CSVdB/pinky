@@ -54,6 +54,7 @@ library:
   - Neural.ParamOpt
   - Neural.ParamOpt.DataSet
   - Neural.ParamOpt.Train
+  - Neural.ParamOpt.Accuracy
 
 executables:
   my-neural-nets-exe:
@@ -103,3 +104,5 @@ tests:
     - Test.Neural.Layers.LayerSpec
     - Test.Neural.Layers.Gen
     - Test.Neural.ParamOpt.TrainSpec
+    - Test.Neural.ParamOpt.Gen
+    - Test.Neural.ParamOpt.InstanceSpec

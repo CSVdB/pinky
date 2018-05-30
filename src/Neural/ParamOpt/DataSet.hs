@@ -1,7 +1,5 @@
 module Neural.ParamOpt.DataSet where
 
-import Import
-
 import Neural.Core.Shape
 
 import Data.List.NonEmpty (NonEmpty)
