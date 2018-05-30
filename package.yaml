@@ -45,6 +45,7 @@ library:
   - Neural.Utils.ProperFraction.Internal
   - Neural.Utils.Proxy
   - Neural.CreateRandom
+  - Neural.ParamOpt.DataSet
 
 executables:
   my-neural-nets-exe:
