@@ -103,6 +103,6 @@ tests:
     - Test.Neural.Layers.Sigmoid
     - Test.Neural.Layers.LayerSpec
     - Test.Neural.Layers.Gen
-    - Test.Neural.ParamOpt.TrainSpec
+    - Test.Neural.ParamOpt.ParamOptSpec
     - Test.Neural.ParamOpt.Gen
     - Test.Neural.ParamOpt.InstanceSpec

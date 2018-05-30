@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeApplications #-}
 
-module Test.Neural.ParamOpt.TrainSpec
+module Test.Neural.ParamOpt.ParamOptSpec
     ( spec
     ) where
 
@@ -44,3 +44,7 @@ spec = do
                     forAllValid $ \hp ->
                         shouldBeValid $
                         flip evalState hp $ trainNetwork net dataset epochs
+    describe "accuracy :: NNet -> DataSet -> ClassificationAccuracy" $
+        it "produces valids on valids" $
+        forAllValid @NNet $ \net ->
+            forAllValid $ \dataset -> shouldBeValid $ accuracy net dataset

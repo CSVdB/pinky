@@ -13,6 +13,7 @@ module Neural.Core.LinearAlgebra
     , mToV
     , mapV
     , mapMatrix
+    , maxIndex
     ) where
 
 import Neural.Core.LinearAlgebra.Internal

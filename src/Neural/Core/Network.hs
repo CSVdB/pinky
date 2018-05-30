@@ -16,6 +16,7 @@ module Neural.Core.Network
     , Tapes(..)
     , getGradientOfNetwork
     , applyGradientToNetwork
+    , runNetwork
     ) where
 
 import Import

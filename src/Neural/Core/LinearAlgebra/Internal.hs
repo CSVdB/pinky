@@ -146,3 +146,6 @@ mToV ::
     => M a b
     -> V c
 mToV (M m) = unsafeToV . NLA.flatten $ Hmatrix.extract m
+
+maxIndex :: KnownNat n => V n -> Int
+maxIndex (V v) = SV.maxIndex $ Hmatrix.extract v
