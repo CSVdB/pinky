@@ -57,3 +57,13 @@ mapS :: (Double -> Double) -> S i -> S i
 mapS f (S1D v) = S1D $ mapV f v
 mapS f (S2D m) = S2D $ mapMatrix f m
 mapS f (S3D m) = S3D $ mapMatrix f m
+
+instance Plus (S i) where
+    S1D v <+> S1D v' = S1D $ v <+> v'
+    S2D m <+> S2D m' = S2D $ m <+> m'
+    S3D m <+> S3D m' = S3D $ m <+> m'
+
+instance Min (S i) where
+    S1D v <-> S1D v' = S1D $ v <-> v'
+    S2D m <-> S2D m' = S2D $ m <-> m'
+    S3D m <-> S3D m' = S3D $ m <-> m'

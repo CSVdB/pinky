@@ -13,12 +13,14 @@ module Neural.Core.Network
     ( Network(..)
     , (<:>)
     , Tapes(..)
+    , train
     ) where
 
 import Import
 
 import Neural.Core.HyperParams
 import Neural.Core.Layer
+import Neural.Core.LinearAlgebra
 import Neural.Core.Shape
 import Neural.CreateRandom
 
@@ -140,3 +142,19 @@ instance ( CreateRandom (Network layers shapes)
     type Tape (Network layers shapes) i o = Tapes layers shapes
     runForwards = runNetwork
     runBackwards = networkGradient
+
+train ::
+       (i ~ Head shapes, o ~ Last shapes)
+    => Network layers shapes
+    -> S i
+    -> S o
+    -> HyperParams
+    -> Network layers shapes
+train net inpt label hp =
+    let (tapes, outpt) = runNetwork net inpt
+        grads = fst $ networkGradient net tapes $ sumSquareError' outpt label
+     in applyGradientToNetwork net grads hp
+
+-- The derivative of the cost function as evaluated on output and label
+sumSquareError' :: S o -> S o -> S o
+sumSquareError' outpt label = outpt <-> label
