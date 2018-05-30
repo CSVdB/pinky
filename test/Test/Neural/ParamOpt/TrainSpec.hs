@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeApplications #-}
 
-module Test.Neural.ParamOpt.Spec
+module Test.Neural.ParamOpt.TrainSpec
     ( spec
     ) where
 
@@ -11,6 +11,10 @@ import TestImport
 import Neural
 
 import Test.Neural.Layers.Gen ()
+
+import Control.Monad.State.Lazy
+
+import qualified Data.List.NonEmpty as NEL
 
 spec :: Spec
 spec = do
@@ -27,8 +31,22 @@ spec = do
             forAllValid $ \inpt ->
                 forAllValid $ \label ->
                     shouldBeValid $ getGradientOfNetwork net inpt label
-    describe "runIteration :: NNet -> DataSet -> HyperParams -> NNet" $
+    describe "runIteration :: NNet -> DataSet -> State HyperParams NNet" $
         it "produces valids on valids" $
         forAllValid @NNet $ \net ->
             forAllValid $ \dataset ->
-                forAllValid $ \hp -> shouldBeValid $ runIteration net dataset hp
+                forAllValid $ \hp -> do
+                    print net
+                    print dataset
+                    print $ NEL.length dataset
+                    print hp
+                    shouldBeValid $ flip evalState hp $ runIteration net dataset
+    describe
+        "trainNetwork :: NNet -> DataSet -> Natural -> State HyperParams NNet" $
+        it "produces valids on valids" $
+        forAllValid @NNet $ \net ->
+            forAllValid $ \dataset ->
+                forAllValid $ \epochs ->
+                    forAllValid $ \hp ->
+                        shouldBeValid $
+                        flip evalState hp $ trainNetwork net dataset epochs

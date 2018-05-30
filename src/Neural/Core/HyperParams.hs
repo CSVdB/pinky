@@ -6,6 +6,7 @@ module Neural.Core.HyperParams
     , hyperRegulator
     , hyperMomentum
     , hyperBatchSize
+    , decay
     ) where
 
 import Neural.Core.HyperParams.Internal

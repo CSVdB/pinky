@@ -17,13 +17,6 @@ import Neural
 import Neural.Core.HyperParams.Internal
 import Neural.Utils.PositiveDouble.Internal
 
-instance GenUnchecked Natural where
-    genUnchecked = naturalFromInteger . abs <$> genUnchecked
-    shrinkUnchecked n = [1 .. n]
-
-instance GenValid Natural where
-    genValid = naturalFromInteger . abs <$> genValid
-
 instance GenUnchecked HyperParams
 
 instance GenValid HyperParams where

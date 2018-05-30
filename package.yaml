@@ -13,8 +13,11 @@ extra-source-files:
 - README.md
 
 dependencies:
+- aeson
 - base >= 4.7 && < 5
+- exceptions
 - hmatrix >= 0.19
+- mtl
 - random
 - singletons
 - split
@@ -42,6 +45,8 @@ library:
   - Neural.Layers.Sigmoid
   - Neural.Utils.PositiveDouble
   - Neural.Utils.PositiveDouble.Internal
+  - Neural.Utils.PositiveInt
+  - Neural.Utils.PositiveInt.Internal
   - Neural.Utils.ProperFraction
   - Neural.Utils.ProperFraction.Internal
   - Neural.Utils.Proxy
@@ -86,6 +91,7 @@ tests:
     - Test.Neural.Core.InstanceSpec
     - Test.Neural.Core.LinearAlgebraGen
     - Test.Neural.Core.LinearAlgebraSpec
+    - Test.Neural.Core.HyperParamSpec
     - Test.Neural.Utils.Gen
     - Test.Neural.Utils.InstanceSpec
     - Test.Neural.Spec.CreateRandom
@@ -96,4 +102,4 @@ tests:
     - Test.Neural.Layers.Sigmoid
     - Test.Neural.Layers.LayerSpec
     - Test.Neural.Layers.Gen
-    - Test.Neural.ParamOpt.Spec
+    - Test.Neural.ParamOpt.TrainSpec

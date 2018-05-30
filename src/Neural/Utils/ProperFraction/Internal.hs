@@ -18,3 +18,6 @@ instance Validity ProperFraction where
             , declare "A ProperFraction is positive" $ x >= 0
             , declare "A ProperFraction is smaller than 1" $ x <= 1
             ]
+
+fracToDouble :: ProperFraction -> Double
+fracToDouble (ProperFraction x) = x
