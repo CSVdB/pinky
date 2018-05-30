@@ -13,3 +13,6 @@ spec :: Spec
 spec = do
     layerSpec @FCL @IShape @OShape
     layerSpec @Reshape @ImageShape @IShape
+    layerSpec @Sigmoid @ImageShape @ImageShape
+    layerSpec @NNetTest @ImageShape @ImageShape
+    layerSpec @NNet @ImageShape @OShape

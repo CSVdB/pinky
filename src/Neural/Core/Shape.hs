@@ -52,3 +52,8 @@ instance Validity (S (n :: Shape)) where
     validate (S1D v) = delve "1D shape" v
     validate (S2D m) = delve "2D shape" m
     validate (S3D m) = delve "3D shape" m
+
+mapS :: (Double -> Double) -> S i -> S i
+mapS f (S1D v) = S1D $ mapV f v
+mapS f (S2D m) = S2D $ mapMatrix f m
+mapS f (S3D m) = S3D $ mapMatrix f m

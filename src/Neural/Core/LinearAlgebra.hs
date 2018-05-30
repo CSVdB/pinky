@@ -11,6 +11,8 @@ module Neural.Core.LinearAlgebra
     , transpose
     , vToM
     , mToV
+    , mapV
+    , mapMatrix
     ) where
 
 import Neural.Core.LinearAlgebra.Internal

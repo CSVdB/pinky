@@ -76,3 +76,29 @@ instance ( GenValid x
          ) =>
          GenValid (Network (x ': xs) (i ': (m ': ss))) where
     genValid = AppendNet <$> genValid <*> genValid
+
+instance SingI i => GenUnchecked (Tapes '[] '[ i]) where
+    genUnchecked = pure EmptyTape
+    shrinkUnchecked = const []
+
+instance ( GenUnchecked (Tape x i m)
+         , SingI i
+         , SingI m
+         , Layer x i m
+         , GenUnchecked (Tapes xs (m ': ss))
+         ) =>
+         GenUnchecked (Tapes (x ': xs) (i ': (m ': ss))) where
+    genUnchecked = AppendTape <$> genUnchecked <*> genUnchecked
+    shrinkUnchecked = const []
+
+instance SingI i => GenValid (Tapes '[] '[ i]) where
+    genValid = pure EmptyTape
+
+instance ( GenValid (Tape x i m)
+         , SingI i
+         , SingI m
+         , Layer x i m
+         , GenValid (Tapes xs (m ': ss))
+         ) =>
+         GenValid (Tapes (x ': xs) (i ': (m ': ss))) where
+    genValid = AppendTape <$> genValid <*> genValid

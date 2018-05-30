@@ -12,6 +12,7 @@
 module Neural.Core.Network
     ( Network(..)
     , (<:>)
+    , Tapes(..)
     ) where
 
 import Import
@@ -30,6 +31,13 @@ data Network :: [*] -> [Shape] -> * where
         => !x
         -> !(Network xs (m ': ss))
         -> Network (x ': xs) (i ': (m ': ss))
+
+instance SingI i => Show (Network '[] '[ i]) where
+    show = const "EmptyNet"
+
+instance (Show x, Layer x i o, Show (Network xs (o ': ss))) =>
+         Show (Network (x ': xs) (i ': (o ': ss))) where
+    show (AppendNet layer net) = concat [show layer, "\n\t<:>\t", show net]
 
 (<:>) ::
        (Layer x i m, SingI i, SingI m)
@@ -76,6 +84,30 @@ data Tapes :: [*] -> [Shape] -> * where
         => !(Tape x i h)
         -> !(Tapes xs (h ': hs))
         -> Tapes (x ': xs) (i ': h ': hs)
+
+instance SingI i => Validity (Tapes '[] '[ i]) where
+    validate = trivialValidation
+
+instance ( Validity (Tape x i m)
+         , SingI i
+         , SingI m
+         , Layer x i m
+         , Validity (Tapes xs (m ': ss))
+         ) =>
+         Validity (Tapes (x ': xs) (i ': (m ': ss))) where
+    validate (AppendTape lt tapes) = delve "tape in tapes" lt <> validate tapes
+
+instance SingI i => Show (Tapes '[] '[ i]) where
+    show = const "EmptyTape"
+
+instance ( Show (Tape x i m)
+         , SingI i
+         , SingI m
+         , Layer x i m
+         , Show (Tapes xs (m ': ss))
+         ) =>
+         Show (Tapes (x ': xs) (i ': (m ': ss))) where
+    show (AppendTape lt tapes) = concat [show lt, "\n\t<:>\t", show tapes]
 
 runNetwork ::
        forall layers shapes.
