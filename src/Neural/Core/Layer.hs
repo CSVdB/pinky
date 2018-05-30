@@ -21,6 +21,8 @@ newtype Gradient x = Gradient
     { gradientParams :: x
     } deriving (Eq, Show, Generic)
 
+instance Validity x => Validity (Gradient x)
+
 class CreateRandom x =>
       UpdateLayer x
     where

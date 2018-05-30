@@ -13,7 +13,7 @@ module Test.Neural.Spec.Layer
     ) where
 
 import Test.Hspec
-import Test.Neural.Core.Gen ()
+import Test.Neural.Layers.Gen ()
 import Test.Neural.Spec.Gen ()
 import Test.Validity
 import TestImport
@@ -21,12 +21,6 @@ import TestImport
 import Neural
 
 import System.Random
-
-instance Validity x => Validity (Gradient x)
-
-instance GenUnchecked x => GenUnchecked (Gradient x)
-
-instance GenValid x => GenValid (Gradient x)
 
 layerSpec ::
        forall x (i :: Shape) (o :: Shape).

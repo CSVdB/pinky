@@ -46,6 +46,7 @@ library:
   - Neural.Utils.ProperFraction.Internal
   - Neural.Utils.Proxy
   - Neural.CreateRandom
+  - Neural.ParamOpt
   - Neural.ParamOpt.DataSet
   - Neural.ParamOpt.Train
 
@@ -95,3 +96,4 @@ tests:
     - Test.Neural.Layers.Sigmoid
     - Test.Neural.Layers.LayerSpec
     - Test.Neural.Layers.Gen
+    - Test.Neural.ParamOpt.Spec
