@@ -1,6 +1,8 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Neural.Utils.PositiveInt
     ( PositiveInt
-    , positiveToNat
+    , posToNum
     , constructPositiveInt
     , takePos
     ) where
@@ -11,8 +13,11 @@ import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NEL
 import Neural.Utils.PositiveInt.Internal
 
-positiveToNat :: PositiveInt -> Natural
-positiveToNat (PositiveInt n) = n
-
 takePos :: PositiveInt -> NonEmpty a -> NonEmpty a
 takePos (PositiveInt n) = NEL.fromList . NEL.take (fromIntegral n)
+
+posToNum ::
+       forall a. Num a
+    => PositiveInt
+    -> a
+posToNum (PositiveInt n) = fromIntegral n

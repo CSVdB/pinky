@@ -2,11 +2,13 @@ module Neural.Core.LinearAlgebra
     ( V
     , M
     , (<#>)
+    , (<#.>)
     , (<+>)
     , (<->)
     , Prod
     , Min
     , Plus
+    , ElemProd
     , outerProd
     , transpose
     , vToM
@@ -14,6 +16,9 @@ module Neural.Core.LinearAlgebra
     , mapV
     , mapMatrix
     , maxIndex
+    , intToV
+    , listToV
+    , listToM
     ) where
 
 import Neural.Core.LinearAlgebra.Internal

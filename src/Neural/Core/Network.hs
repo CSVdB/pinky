@@ -129,7 +129,7 @@ networkGradient ::
        forall ls ss.
        Network ls ss
     -> Tapes ls ss
-    -> S (Last ss)
+    -> S (Last ss) -- The error at the end
     -> (Gradient (Network ls ss), S (Head ss))
 networkGradient EmptyNet EmptyTape outpt = (Gradient EmptyNet, outpt)
 networkGradient (AppendNet layer net) (AppendTape layerTape netTape) outpt =

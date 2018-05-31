@@ -20,6 +20,21 @@ data HyperParams = HyperParams
     , hyperBatchSize :: PositiveInt
     } deriving (Show, Eq, Generic)
 
+constructHyperParamsFromBasics ::
+       Double
+    -> Double
+    -> Double
+    -> Double
+    -> Natural
+    -> Either String HyperParams
+constructHyperParamsFromBasics rate' dr' mom' reg' bs' = do
+    rate <- constructPositiveDouble rate'
+    dr <- constructProperFraction dr'
+    mom <- constructProperFraction mom'
+    reg <- constructPositiveDouble reg'
+    bs <- constructPositiveInt bs'
+    prettyValidation $ HyperParams rate dr mom reg bs
+
 constructHyperParams ::
        PositiveDouble
     -> ProperFraction

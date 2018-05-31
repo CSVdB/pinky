@@ -1,10 +1,13 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Neural.ParamOpt.Accuracy
     ( ClassificationAccuracy(..)
     , accuracy
+    , showAccuracy
+    , showAccuracyFromNetwork
     ) where
 
 import Import
@@ -23,7 +26,7 @@ newtype ClassificationAccuracy = ClassificationAccuracy
 instance Validity ClassificationAccuracy
 
 accuracy ::
-       (i ~ Head shapes, o ~ ('D1 n), o ~ Last shapes, KnownNat n)
+       (i ~ Head shapes, o ~ Last shapes, SingI o)
     => Network layers shapes
     -> DataSet i o
     -> ClassificationAccuracy
@@ -37,5 +40,24 @@ accuracy net dataset =
             Left errMess -> error errMess
             Right a -> a
 
-samePrediction :: KnownNat n => S ('D1 n) -> S ('D1 n) -> Bool
+samePrediction ::
+       forall n. SingI n
+    => S n
+    -> S n
+    -> Bool
 samePrediction (S1D label) (S1D outpt) = maxIndex label == maxIndex outpt
+samePrediction _ _ = error "The output layer isn't 1D"
+
+showAccuracy :: String -> ClassificationAccuracy -> String
+showAccuracy name (ClassificationAccuracy pf) =
+    unwords ["The", name, "accuracy is", show (100 * fracToDouble pf) ++ "%."]
+
+showAccuracyFromNetwork ::
+       (i ~ Head shapes, o ~ Last shapes, SingI o)
+    => Network layers shapes
+    -> String
+    -> DataSet i o
+    -> String
+showAccuracyFromNetwork net name dataset =
+    let acc = accuracy net dataset
+     in showAccuracy name acc

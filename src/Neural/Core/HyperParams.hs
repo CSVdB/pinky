@@ -1,6 +1,7 @@
 module Neural.Core.HyperParams
     ( HyperParams
     , constructHyperParams
+    , constructHyperParamsFromBasics
     , hyperRate
     , hyperDecayRate
     , hyperRegulator

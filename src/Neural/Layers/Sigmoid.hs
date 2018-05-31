@@ -27,14 +27,16 @@ instance Validity Sigmoid where
     validate = trivialValidation
 
 sigmoid :: Floating a => a -> a
-sigmoid x =
-    let eMinX = exp $ -x
-     in 1 / (1 + eMinX)
+sigmoid x = 1 / (1 + exp (-x))
 
-sigmoid' :: Floating a => a -> a
-sigmoid' x = sigmoid x * (1 - sigmoid x)
-
+-- The derivative of the sigmoid function is
+-- sigma'(x) = sigma(x) * (1 - sigma(x)).
+-- Since we already calculated sigma(x) in runForwards,
+-- we can store this in the Tape and
 instance Layer Sigmoid i i where
-    type Tape Sigmoid i i = ()
-    runForwards _ inpt = ((), mapS sigmoid inpt)
-    runBackwards _ _ outpt = (Gradient Sigmoid, mapS sigmoid' outpt)
+    type Tape Sigmoid i i = S i
+    runForwards _ inpt =
+        let sigma = mapS sigmoid inpt
+         in (sigma, sigma)
+    runBackwards _ sigma outpt =
+        (Gradient Sigmoid, (<#.>) outpt $ mapS (\s -> s * (1 - s)) sigma)

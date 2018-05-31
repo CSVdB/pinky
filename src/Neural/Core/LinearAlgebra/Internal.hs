@@ -149,3 +149,61 @@ mToV (M m) = unsafeToV . NLA.flatten $ Hmatrix.extract m
 
 maxIndex :: KnownNat n => V n -> Int
 maxIndex (V v) = SV.maxIndex $ Hmatrix.extract v
+
+unsafeListToV ::
+       forall n. KnownNat n
+    => [Double]
+    -> V n
+unsafeListToV = V . Hmatrix.fromList
+
+listToV ::
+       forall n. KnownNat n
+    => [Double]
+    -> Maybe (V n)
+listToV xs =
+    if length xs == natToInt @n
+        then Just $ unsafeListToV xs
+        else Nothing
+
+unsafeListToM ::
+       forall m n. (KnownNat m, KnownNat n)
+    => [Double]
+    -> M m n
+unsafeListToM = M . Hmatrix.fromList
+
+listToM ::
+       forall m n. (KnownNat m, KnownNat n)
+    => [Double]
+    -> Maybe (M m n)
+listToM xs =
+    if length xs == natToInt @m * natToInt @n
+        then Just $ unsafeListToM xs
+        else Nothing
+
+intToV ::
+       forall n. KnownNat n
+    => Int
+    -> Maybe (V n)
+intToV x =
+    let len = natToInt @n
+     in if x < len
+            then listToV [oneIfEqual j x | j <- [1 .. len]]
+            else Nothing
+
+oneIfEqual :: Int -> Int -> Double
+oneIfEqual a b =
+    if a == b
+        then 1
+        else 0
+
+class ElemProd a where
+    (<#.>) :: a -> a -> a
+
+instance ElemProd Double where
+    (<#.>) = (*)
+
+instance KnownNat n => ElemProd (V n) where
+    V v <#.> V v' = V $ v * v'
+
+instance (KnownNat m, KnownNat n) => ElemProd (M m n) where
+    M m <#.> M m' = M $ m * m'

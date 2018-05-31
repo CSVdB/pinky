@@ -1,10 +1,12 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Neural.Core.Shape where
 
@@ -67,3 +69,21 @@ instance Min (S i) where
     S1D v <-> S1D v' = S1D $ v <-> v'
     S2D m <-> S2D m' = S2D $ m <-> m'
     S3D m <-> S3D m' = S3D $ m <-> m'
+
+instance ElemProd (S i) where
+    S1D v <#.> S1D v' = S1D $ v <#.> v'
+    S2D m <#.> S2D m' = S2D $ m <#.> m'
+    S3D m <#.> S3D m' = S3D $ m <#.> m'
+
+listToS ::
+       forall n. SingI n
+    => [Double]
+    -> Maybe (S n)
+listToS xs =
+    case sing :: Sing n of
+        D1Sing SNat -> S1D <$> listToV xs
+        D2Sing SNat SNat -> S2D <$> listToM xs
+        D3Sing SNat SNat SNat -> S3D <$> listToM xs
+
+intToS :: KnownNat n => Int -> Maybe (S ('D1 n))
+intToS = fmap S1D . intToV

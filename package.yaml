@@ -17,10 +17,10 @@ dependencies:
 - base >= 4.7 && < 5
 - exceptions
 - hmatrix >= 0.19
+- MonadRandom
 - mtl
 - random
 - singletons
-- split
 - validity >= 0.4.0.4
 - vector
 
@@ -66,7 +66,22 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - bytestring
+    - megaparsec
     - my-neural-nets
+    - path
+    - path-io
+    other-modules:
+    - Import
+    - Utils.Files
+    - Utils.Parser
+    - Utils.Zip
+    - MNIST.DataSet
+    - MNIST.Parser
+    - MNIST.Parser.Internal
+    - MNIST.Load
+    - NN.Network
+    - NN.Params
 
 tests:
   my-neural-nets-test:
