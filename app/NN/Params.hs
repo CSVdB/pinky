@@ -6,6 +6,6 @@ import Neural
 
 params :: HyperParams
 params =
-    case constructHyperParamsFromBasics 0.3 0.99 0 0 10 of
+    case constructHyperParamsFromBasics 8 0.90 0 1e-6 10 of
         Left errMess -> error errMess
         Right x -> x

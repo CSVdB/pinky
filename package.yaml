@@ -20,6 +20,7 @@ dependencies:
 - MonadRandom
 - mtl
 - random
+- random-shuffle
 - singletons
 - validity >= 0.4.0.4
 - vector

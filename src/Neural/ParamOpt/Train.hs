@@ -12,7 +12,7 @@ import Import
 
 import Neural.Core
 
---import Neural.ParamOpt.Accuracy
+import Neural.ParamOpt.Accuracy
 import Neural.ParamOpt.DataSet
 import Neural.Utils
 
@@ -22,7 +22,11 @@ import qualified Data.List.NonEmpty as NEL
 
 import Control.Monad.State.Lazy
 
---import Debug.Trace
+import Debug.Trace
+
+import Control.Monad.Random
+import System.Random.Shuffle
+
 runIteration ::
        (i ~ Head shapes, o ~ Last shapes, SingI o)
     => Network layers shapes
@@ -31,8 +35,8 @@ runIteration ::
 runIteration net0 dataset = do
     hp <- get
     decay
-    --trace (showAccuracyFromNetwork net0 "train" dataset) $
-    pure $
+    trace (showAccuracyFromNetwork net0 "train" dataset) $
+        pure $
         foldl' (trainOnChunk hp) net0 $
         chunksOf (posToNum $ hyperBatchSize hp) $ NEL.toList dataset
   where
@@ -51,7 +55,11 @@ trainNetwork net0 dataset epochs =
         Nothing -> pure net0
         Just newEpochs -> do
             !net <- runIteration net0 dataset
-            trainNetwork net dataset newEpochs
+            let shuffledData =
+                    NEL.fromList $
+                    evalRand (shuffleM $ NEL.toList dataset) $
+                    mkStdGen $ fromIntegral newEpochs
+            trainNetwork net shuffledData newEpochs
 
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf n

@@ -36,7 +36,7 @@ newtype V (n :: Nat) =
 instance KnownNat n => CreateRandom (V n) where
     createRandom seed =
         let (int, seed') = next seed
-            v = V $ Hmatrix.randomVector int NLA.Uniform
+            v = V $ Hmatrix.randomVector int NLA.Gaussian
          in (v, seed')
 
 newtype M (i :: Nat) (j :: Nat) =
@@ -46,7 +46,11 @@ newtype M (i :: Nat) (j :: Nat) =
 instance (KnownNat m, KnownNat n) => CreateRandom (M m n) where
     createRandom seed =
         let (int, seed') = next seed
-            m = M $ Hmatrix.uniformSample int (-1) 1
+            normalisation = 1 / sqrt (fromIntegral $ natToInt @n)
+            m =
+                M $
+                Hmatrix.uniformSample int (Hmatrix.konst (-normalisation)) $
+                Hmatrix.konst normalisation
          in (m, seed')
 
 class Prod a b c | a b -> c where

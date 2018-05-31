@@ -11,7 +11,7 @@ import Import
 
 import Neural.Core
 import Neural.CreateRandom
-import Neural.Utils.PositiveDouble
+import Neural.Utils
 
 data FullyConnected (i :: Nat) (o :: Nat) = FullyConnected
     { biases :: V o
@@ -26,7 +26,7 @@ instance (KnownNat i, KnownNat o) => CreateRandom (FullyConnected i o) where
 
 instance (KnownNat i, KnownNat o) => UpdateLayer (FullyConnected i o) where
     applyGradient (FullyConnected bias weight) (Gradient (FullyConnected gradBias gradWeight)) hp =
-        let rate = posToDouble $ hyperRate hp
+        let rate = posToDouble (hyperRate hp) / posToNum (hyperBatchSize hp)
             reg = posToDouble $ hyperRegulator hp
             newBias = (1 - rate * reg) <#> bias <-> rate <#> gradBias
             newWeight = (1 - rate * reg) <#> weight <-> rate <#> gradWeight

@@ -15,19 +15,20 @@ import MNIST.Load
 import Control.Monad.State.Lazy
 
 nOfTrain, nOfVal, nOfTest :: Int
-nOfTrain = 10000
+nOfTrain = 1000
 
 nOfVal = 1000
 
 nOfTest = 1000
 
 epochs :: Natural
-epochs = 5
+epochs = 10
 
 main :: IO ()
 main = do
     net <- createRandomM @IO @NN
-    (trainSet, valSet, testSet) <- load nOfTrain nOfVal nOfTest
+    (!trainSet, valSet, testSet) <- load nOfTrain nOfVal nOfTest
+    putStrLn "Trainset loaded"
     let !trainedNet = evalState (trainNetwork net trainSet epochs) params
     printAccs trainedNet trainSet valSet testSet
   where
