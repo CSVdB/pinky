@@ -1,0 +1,71 @@
+name:                my-neural-nets-test-utils
+version:             0.0.0.0
+synopsis:            Generators and tests for neural
+description:         Please see the README on GitHub at <https://github.com/Nickske666/my-neural-nets#readme>
+category:            Data science
+license:             BSD3
+author:              "Nick Van den Broeck"
+maintainer:          nick.van.den.broeck@hotmail.com
+copyright:           "2018 Nick Van den Broeck"
+
+dependencies:
+- aeson
+- base >= 4.7 && < 5
+- hmatrix >= 0.19
+- hspec
+- genvalidity >= 0.4.0.4
+- genvalidity-hspec >= 0.5
+- MonadRandom
+- mtl
+- my-neural-nets
+- QuickCheck
+- random
+- random-shuffle
+- singletons
+- validity >= 0.4.0.4
+- vector
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  default-extensions:
+  - NoImplicitPrelude
+  exposed-modules:
+  - Test.Neural.Core.Gen
+  - Test.Neural.Core.LinearAlgebraGen
+  - Test.Neural.Layers.FullyConnected
+  - Test.Neural.Layers.Reshape
+  - Test.Neural.Layers.Sigmoid
+  - Test.Neural.Layers.Gen
+  - Test.Neural.ParamOpt.Gen
+  - Test.Neural.Spec.CreateRandom
+  - Test.Neural.Spec.Layer
+  - Test.Neural.Spec.Gen
+  - Test.Neural.Utils.Gen
+  other-modules:
+  - Import
+  - Utils
+
+tests:
+  my-neural-nets-test:
+    main:                Spec.hs
+    source-dirs:         test
+    default-extensions:
+    - NoImplicitPrelude
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - my-neural-nets-test-utils
+    other-modules:
+    - TestImport
+    - TestUtils
+    - Test.Neural.Core.InstanceSpec
+    - Test.Neural.Core.LinearAlgebraSpec
+    - Test.Neural.Core.HyperParamSpec
+    - Test.Neural.Utils.InstanceSpec
+    - Test.Neural.Layers.LayerSpec
+    - Test.Neural.ParamOpt.ParamOptSpec
+    - Test.Neural.ParamOpt.InstanceSpec

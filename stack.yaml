@@ -1,8 +1,9 @@
 packages:
-- .
+- neural
+- neural-test-utils
+- neural-test-utils-integration
 resolver: lts-11.10
 nix:
-  enable: true
   packages: [blas, liblapack, gfortran.cc.lib]
 extra-deps:
 - hmatrix-0.19.0.0
