@@ -25,12 +25,14 @@ instance (KnownNat i, KnownNat o) => CreateRandom (FullyConnected i o) where
          in (FullyConnected rB rW, seed2)
 
 instance (KnownNat i, KnownNat o) => UpdateLayer (FullyConnected i o) where
-    applyGradient (FullyConnected bias weight) (Gradient (FullyConnected gradBias gradWeight)) hp =
-        let rate = posToDouble (hyperRate hp) / posToNum (hyperBatchSize hp)
-            reg = posToDouble $ hyperRegulator hp
-            newBias = (1 - rate * reg) <#> bias <-> rate <#> gradBias
-            newWeight = (1 - rate * reg) <#> weight <-> rate <#> gradWeight
-         in FullyConnected newBias newWeight
+    applyGradient (Momentum (FullyConnected bias weight) (FullyConnected biasMom weightMom)) (Gradient (FullyConnected gradBias gradWeight)) hp =
+        let Momentum newBias newBiasMom =
+                applyMomentum hp (Gradient gradBias) $ Momentum bias biasMom
+            Momentum newWeight newWeightMom =
+                applyMomentum hp (Gradient gradWeight) $
+                Momentum weight weightMom
+         in Momentum (FullyConnected newBias newWeight) $
+            FullyConnected newBiasMom newWeightMom
 
 instance (KnownNat i, KnownNat o) => Validity (FullyConnected i o) where
     validate (FullyConnected bias weight) = validate bias <> validate weight
@@ -42,9 +44,9 @@ instance (KnownNat i, KnownNat o) =>
         (v, S1D $ weights <#> v <+> biases)
     -- dCdz is the vector containing the partial derivatives
     -- partial C / partial z_i, where z = weights <#> inputVector <+> biases
-    runBackwards FullyConnected {..} vIn (S1D dCdz) =
-        let gradBiases = dCdz
-            gradWeights = dCdz `outerProd` vIn
+    runBackwards (Momentum (FullyConnected bias weight) (FullyConnected biasMom weightMom)) vIn (S1D dCdz) =
+        let gradBias = dCdz
+            gradWeight = dCdz `outerProd` vIn
             -- Derivatives for the next step
-            dCdz' = transpose weights <#> dCdz
-         in (Gradient $ FullyConnected gradBiases gradWeights, S1D dCdz')
+            dCdz' = transpose weight <#> dCdz
+         in (Gradient $ FullyConnected gradBias gradWeight, S1D dCdz')

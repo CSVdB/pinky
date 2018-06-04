@@ -21,7 +21,7 @@ instance CreateRandom Sigmoid where
     createRandom seed = (Sigmoid, seed)
 
 instance UpdateLayer Sigmoid where
-    applyGradient _ _ _ = Sigmoid
+    applyGradient _ _ _ = Momentum Sigmoid Sigmoid
 
 instance Validity Sigmoid where
     validate = trivialValidation

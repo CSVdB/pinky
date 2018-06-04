@@ -22,44 +22,46 @@ import qualified Data.List.NonEmpty as NEL
 
 import Control.Monad.State.Lazy
 
-import Debug.Trace
-
+--import Debug.Trace
 import Control.Monad.Random
 import System.Random.Shuffle
 
 runIteration ::
        (i ~ Head shapes, o ~ Last shapes, SingI o)
-    => Network layers shapes
+    => Momentum (Network layers shapes)
     -> DataSet i o
-    -> State HyperParams (Network layers shapes)
-runIteration net0 dataset = do
+    -> State HyperParams (Momentum (Network layers shapes))
+runIteration mom0 dataset = do
     hp <- get
     decay
-    trace (showAccuracyFromNetwork net0 "train" dataset) $
-        pure $
-        foldl' (trainOnChunk hp) net0 $
+    -- trace (showAccuracyFromNetwork net0 "train" dataset) $
+    pure $
+        foldl' (trainOnChunk hp) mom0 $
         chunksOf (posToNum $ hyperBatchSize hp) $ NEL.toList dataset
   where
-    trainOnChunk hp0 netw chunk =
-        let !grads = fmap (uncurry $ getGradientOfNetwork netw) chunk
-         in foldl' (\net grad -> applyGradientToNetwork net grad hp0) netw grads
+    trainOnChunk hp0 mom chunk =
+        let !grads = fmap (uncurry $ getGradientOfNetwork mom) chunk
+         in foldl'
+                (\momentum grad -> applyGradientToNetwork momentum grad hp0)
+                mom
+                grads
 
 trainNetwork ::
        (i ~ Head shapes, o ~ Last shapes, SingI o)
-    => Network layers shapes
+    => Momentum (Network layers shapes)
     -> DataSet i o
     -> Natural
-    -> State HyperParams (Network layers shapes)
-trainNetwork net0 dataset epochs =
+    -> State HyperParams (Momentum (Network layers shapes))
+trainNetwork mom0 dataset epochs =
     case minusNaturalMaybe epochs 1 of
-        Nothing -> pure net0
+        Nothing -> pure mom0
         Just newEpochs -> do
-            !net <- runIteration net0 dataset
+            !mom <- runIteration mom0 dataset
             let shuffledData =
                     NEL.fromList $
                     evalRand (shuffleM $ NEL.toList dataset) $
                     mkStdGen $ fromIntegral newEpochs
-            trainNetwork net shuffledData newEpochs
+            trainNetwork mom shuffledData newEpochs
 
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf n

@@ -61,3 +61,18 @@ tests:
     - my-neural-nets-test-utils-integration
     other-modules:
     - TestImport
+
+benchmarks:
+  neural-bench:
+    main: Main.hs
+    source-dirs: bench
+    ghc-options:
+    - -threaded
+    - -rtsopts 
+    - -with-rtsopts=-N
+    - -Wall    
+    - -fno-warn-name-shadowing
+    dependencies:
+    - criterion
+    - QuickCheck
+    - my-neural-nets-test-utils-integration

@@ -22,7 +22,7 @@ instance CreateRandom Reshape where
     createRandom seed = (Reshape, seed)
 
 instance UpdateLayer Reshape where
-    applyGradient _ _ _ = Reshape
+    applyGradient _ _ _ = Momentum Reshape Reshape
 
 instance Validity Reshape where
     validate = trivialValidation

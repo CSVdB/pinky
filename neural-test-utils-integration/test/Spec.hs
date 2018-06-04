@@ -5,8 +5,7 @@
 module Spec where
 
 import Test.Hspec
-import Test.Neural.Spec.Gen
-import Test.Validity
+
 import TestImport
 
 import Neural
@@ -17,8 +16,6 @@ import MNIST.Load
 
 import Control.Monad.Random.Lazy
 import Control.Monad.State.Lazy
-
-import System.Random
 
 nOfTrain, nOfVal, nOfTest :: Int
 nOfTrain = 3500
@@ -44,9 +41,11 @@ spec =
     describe "MNIST" $
     it "unit test network training" $ do
         stdGen <- getStdGen
-        let net = evalRand (createRandomM @(Rand StdGen) @NN) stdGen
-        (!trainSet, valSet, testSet) <- load nOfTrain nOfVal nOfTest
-        let !trainedNet = evalState (trainNetwork net trainSet epochs) params
+        let momNet =
+                evalRand (createRandomM @(Rand StdGen) @(Momentum NN)) stdGen
+        (!trainSet, _, testSet) <- load nOfTrain nOfVal nOfTest
+        let !(Momentum trainedNet _) =
+                evalState (trainNetwork momNet trainSet epochs) params
         let testAcc = accuracy trainedNet testSet
         let minAcc = unsafeConstructAcc 0.79
         testAcc `shouldSatisfy` (> minAcc)

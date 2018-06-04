@@ -95,3 +95,9 @@ instance ( GenValid (Tape x i m)
          ) =>
          GenValid (Tapes (x ': xs) (i ': (m ': ss))) where
     genValid = AppendTape <$> genValid <*> genValid
+
+instance GenUnchecked x => GenUnchecked (Momentum x) where
+    genUnchecked = Momentum <$> genUnchecked <*> genUnchecked
+
+instance GenValid x => GenValid (Momentum x) where
+    genValid = Momentum <$> genValid <*> genValid

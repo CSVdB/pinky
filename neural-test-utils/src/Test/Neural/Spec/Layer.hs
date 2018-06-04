@@ -73,10 +73,10 @@ layerSpec =
                  ]) $
             it "creates valids on valids" $
             forAllValid $ \(tape :: Tape x i o) ->
-                forAllValid $ \(layer :: x) ->
+                forAllValid $ \(mom :: Momentum x) ->
                     forAllValid $ \(outpt :: S o) ->
                         shouldBeValid
-                            (runBackwards layer tape outpt :: (Gradient x, S i))
+                            (runBackwards mom tape outpt :: (Gradient x, S i))
         describe
             (unwords
                  [ "applyGradient :: HyperParams ->"
@@ -88,9 +88,9 @@ layerSpec =
                  ]) $
             it "creates valids on valids" $
             forAllValid $ \(hp :: HyperParams) ->
-                forAllValid $ \(layer :: x) ->
+                forAllValid $ \(mom :: Momentum x) ->
                     forAllValid $ \(grad :: Gradient x) ->
-                        shouldBeValid $ applyGradient layer grad hp
+                        shouldBeValid $ applyGradient mom grad hp
   where
     xName = typeToName @x
     iName = show . typeRep $ Proxy @i

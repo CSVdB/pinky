@@ -17,33 +17,36 @@ import Control.Monad.State.Lazy
 spec :: Spec
 spec = do
     describe
-        "applyGradientToNetwork :: NNet -> Grad (NNet) -> HyperParams -> NNet" $
+        "applyGradientToNetwork :: Momentum NNet -> Grad (NNet) -> HyperParams -> Momentum NNet" $
         it "produces valids on valids" $
-        forAllValid @NNet $ \net ->
+        forAllValid @(Momentum NNet) $ \momNet ->
             forAllValid $ \grad ->
                 forAllValid $ \hp ->
-                    shouldBeValid $ applyGradientToNetwork net grad hp
-    describe "getGradientOfNetwork :: NNet -> S i -> S o -> Gradient (NNet)" $
+                    shouldBeValid $ applyGradientToNetwork momNet grad hp
+    describe
+        "getGradientOfNetwork :: Momentum NNet -> S i -> S o -> Gradient (NNet)" $
         it "produces valids on valids" $
-        forAllValid @NNet $ \net ->
+        forAllValid @(Momentum NNet) $ \momNet ->
             forAllValid $ \inpt ->
                 forAllValid $ \label ->
-                    shouldBeValid $ getGradientOfNetwork net inpt label
-    describe "runIteration :: NNet -> DataSet -> State HyperParams NNet" $
+                    shouldBeValid $ getGradientOfNetwork momNet inpt label
+    describe
+        "runIteration :: Momentum NNet -> DataSet -> State HyperParams NNet" $
         it "produces valids on valids" $
-        forAllValid @NNet $ \net ->
+        forAllValid @(Momentum NNet) $ \momNet ->
             forAllValid $ \dataset ->
                 forAllValid $ \hp ->
-                    shouldBeValid $ flip evalState hp $ runIteration net dataset
+                    shouldBeValid $
+                    flip evalState hp $ runIteration momNet dataset
     describe
-        "trainNetwork :: NNet -> DataSet -> Natural -> State HyperParams NNet" $
+        "trainNetwork :: Momentum NNet -> DataSet -> Natural -> State HyperParams (Momentum NNet)" $
         it "produces valids on valids" $
-        forAllValid @NNet $ \net ->
+        forAllValid @(Momentum NNet) $ \momNet ->
             forAllValid $ \dataset ->
                 forAllValid $ \epochs ->
                     forAllValid $ \hp ->
                         shouldBeValid $
-                        flip evalState hp $ trainNetwork net dataset epochs
+                        flip evalState hp $ trainNetwork momNet dataset epochs
     describe "accuracy :: NNet -> DataSet -> ClassificationAccuracy" $
         it "produces valids on valids" $
         forAllValid @NNet $ \net ->
