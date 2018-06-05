@@ -76,11 +76,11 @@ genInputShape :: IO (S ImageShape)
 genInputShape = generate genValid
 
 nOfTrain, nOfVal, nOfTest :: Int
-nOfTrain = 1000
+nOfTrain = 100
 
-nOfVal = 100
+nOfVal = 10
 
-nOfTest = 100
+nOfTest = 10
 
 epochs :: Natural
 epochs = 2
