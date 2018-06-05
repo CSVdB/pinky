@@ -40,12 +40,12 @@ spec :: Spec
 spec =
     describe "MNIST" $
     it "unit test network training" $ do
-        stdGen <- getStdGen
+        let stdGen = mkStdGen 4
         let momNet =
                 evalRand (createRandomM @(Rand StdGen) @(Momentum NN)) stdGen
         (!trainSet, _, testSet) <- load nOfTrain nOfVal nOfTest
         let !(Momentum trainedNet _) =
                 evalState (trainNetwork momNet trainSet epochs) params
         let testAcc = accuracy trainedNet testSet
-        let minAcc = unsafeConstructAcc 0.79
+        let minAcc = unsafeConstructAcc 0.81
         testAcc `shouldSatisfy` (> minAcc)

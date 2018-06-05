@@ -9,7 +9,7 @@ import Neural
 import GHC.Natural
 
 params :: HyperParams
-params = unsafeConstructHP 6 0.50 0 3e-5 10
+params = unsafeConstructHP 6 0.50 3e-7 3e-5 10
 
 unsafeConstructHP ::
        Double -> Double -> Double -> Double -> Natural -> HyperParams
