@@ -53,9 +53,8 @@ type NNetData = DataSet ImageShape OShape
 main :: IO ()
 main =
     defaultMain
-        -- bench "Generate fully connected layer" $ eval genFCL
-        --,
         [ bench "Generate input" $ eval genInputShape
+        , bench "Generate NNet" $ eval $ createRandomM @IO @NNet
         , bench "Generate input and runForwards on NNet" $
           eval genAndRunForwards
         , bench "Train NNet on MNIST" $ eval trainNNet
@@ -73,9 +72,6 @@ genAndRunForwards = do
     net <- createRandomM @IO @NNet
     pure . snd $ runForwards net inpt
 
-genFCL :: IO FCL
-genFCL = createRandomM @IO @FCL
-
 genInputShape :: IO (S ImageShape)
 genInputShape = generate genValid
 
@@ -89,8 +85,8 @@ nOfTest = 100
 epochs :: Natural
 epochs = 2
 
-trainNNet :: IO NNet
+trainNNet :: IO (Momentum NNet)
 trainNNet = do
-    net <- createRandomM @IO @NNet
+    momNet <- createRandomM @IO @(Momentum NNet)
     (trainSet, _, _) <- load nOfTrain nOfVal nOfTest
-    pure $ evalState (trainNetwork net trainSet epochs) params
+    pure $ evalState (trainNetwork momNet trainSet epochs) params
