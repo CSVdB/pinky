@@ -39,8 +39,8 @@ runIteration mom0 dataset = do
         foldl' (trainOnChunk hp) mom0 $
         chunksOf (posToNum $ hyperBatchSize hp) $ NEL.toList dataset
   where
-    trainOnChunk hp0 mom chunk =
-        let !grads = fmap (uncurry $ getGradientOfNetwork mom) chunk
+    trainOnChunk hp0 mom@(Momentum net netMom) chunk =
+        let !grads = fmap (uncurry $ getGradientOfNetwork net) chunk
          in foldl'
                 (\momentum grad -> applyGradientToNetwork momentum grad hp0)
                 mom

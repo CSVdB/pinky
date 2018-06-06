@@ -6,9 +6,6 @@ import Import
 
 import Neural
 
-instance GenUnchecked Reshape where
-    genUnchecked = pure Reshape
-    shrinkUnchecked = const []
+instance GenUnchecked Reshape
 
-instance GenValid Reshape where
-    genValid = pure Reshape
+instance GenValid Reshape

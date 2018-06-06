@@ -9,6 +9,7 @@ import Test.Neural.Layers.FullyConnected ()
 import Test.Neural.Layers.Reshape ()
 import Test.Neural.Layers.Resize ()
 import Test.Neural.Layers.Sigmoid ()
+import Test.Neural.Layers.Softmax ()
 
 import Import
 

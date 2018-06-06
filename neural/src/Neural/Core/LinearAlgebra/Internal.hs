@@ -34,6 +34,9 @@ newtype V (n :: Nat) =
     V (Hmatrix.R n)
     deriving (Show, Eq, Generic)
 
+konstV :: KnownNat n => Double -> V n
+konstV = V . Hmatrix.konst
+
 instance KnownNat n => CreateRandom (V n) where
     createRandom seed =
         let (int, seed') = next seed
@@ -43,6 +46,9 @@ instance KnownNat n => CreateRandom (V n) where
 newtype M (i :: Nat) (j :: Nat) =
     M (Hmatrix.L i j)
     deriving (Show, Eq, Generic)
+
+diag :: KnownNat n => V n -> M n n
+diag (V v) = M $ Hmatrix.diag v
 
 instance (KnownNat m, KnownNat n) => CreateRandom (M m n) where
     createRandom seed =

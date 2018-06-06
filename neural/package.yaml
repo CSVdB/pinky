@@ -42,6 +42,7 @@ library:
   - Neural.Layers.FullyConnected
   - Neural.Layers.Reshape
   - Neural.Layers.Sigmoid
+  - Neural.Layers.Softmax
   - Neural.Utils.PositiveDouble
   - Neural.Utils.PositiveDouble.Internal
   - Neural.Utils.PositiveInt

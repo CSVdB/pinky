@@ -131,17 +131,14 @@ runNetwork (AppendNet layer net) inpt =
 
 networkGradient ::
        forall ls ss.
-       Momentum (Network ls ss)
+       Network ls ss
     -> Tapes ls ss
     -> S (Last ss) -- The error at the end
     -> (Gradient (Network ls ss), S (Head ss))
-networkGradient (Momentum EmptyNet EmptyNet) EmptyTape outpt =
-    (Gradient EmptyNet, outpt)
-networkGradient (Momentum (AppendNet layer net) (AppendNet layerMom netMom)) (AppendTape layerTape netTape) outpt =
-    let (Gradient gradNet, outpt') =
-            networkGradient (Momentum net netMom) netTape outpt
-        (Gradient gradLayer, inpt) =
-            runBackwards (Momentum layer layerMom) layerTape outpt'
+networkGradient EmptyNet EmptyTape outpt = (Gradient EmptyNet, outpt)
+networkGradient (AppendNet layer net) (AppendTape layerTape netTape) outpt =
+    let (Gradient gradNet, outpt') = networkGradient net netTape outpt
+        (Gradient gradLayer, inpt) = runBackwards layer layerTape outpt'
      in (Gradient (AppendNet gradLayer gradNet), inpt)
 
 instance ( CreateRandom (Network layers shapes)
@@ -155,13 +152,13 @@ instance ( CreateRandom (Network layers shapes)
 
 getGradientOfNetwork ::
        (i ~ Head shapes, o ~ Last shapes)
-    => Momentum (Network layers shapes)
+    => Network layers shapes
     -> S i
     -> S o
     -> Gradient (Network layers shapes)
-getGradientOfNetwork mom@(Momentum net _) inpt label =
+getGradientOfNetwork net inpt label =
     let (!tapes, !outpt) = runNetwork net inpt
-     in fst $ networkGradient mom tapes $ sumSquareError' outpt label
+     in fst $ networkGradient net tapes $ sumSquareError' outpt label
 
 -- The derivative of the cost function as evaluated on output and label
 sumSquareError' :: S o -> S o -> S o

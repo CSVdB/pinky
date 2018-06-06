@@ -37,6 +37,7 @@ library:
   - Test.Neural.Layers.Reshape
   - Test.Neural.Layers.Resize
   - Test.Neural.Layers.Sigmoid
+  - Test.Neural.Layers.Softmax
   - Test.Neural.Layers.Gen
   - Test.Neural.ParamOpt.Gen
   - Test.Neural.Spec.CreateRandom

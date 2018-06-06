@@ -26,10 +26,10 @@ spec = do
     describe
         "getGradientOfNetwork :: Momentum NNet -> S i -> S o -> Gradient (NNet)" $
         it "produces valids on valids" $
-        forAllValid @(Momentum NNet) $ \momNet ->
+        forAllValid @NNet $ \net ->
             forAllValid $ \inpt ->
                 forAllValid $ \label ->
-                    shouldBeValid $ getGradientOfNetwork momNet inpt label
+                    shouldBeValid $ getGradientOfNetwork net inpt label
     describe
         "runIteration :: Momentum NNet -> DataSet -> State HyperParams NNet" $
         it "produces valids on valids" $

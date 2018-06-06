@@ -44,7 +44,7 @@ instance (KnownNat i, KnownNat o) =>
         (v, S1D $ weights <#> v <+> biases)
     -- dCdz is the vector containing the partial derivatives
     -- partial C / partial z_i, where z = weights <#> inputVector <+> biases
-    runBackwards (Momentum (FullyConnected bias weight) (FullyConnected biasMom weightMom)) vIn (S1D dCdz) =
+    runBackwards (FullyConnected bias weight) vIn (S1D dCdz) =
         let gradBias = dCdz
             gradWeight = dCdz `outerProd` vIn
             -- Derivatives for the next step

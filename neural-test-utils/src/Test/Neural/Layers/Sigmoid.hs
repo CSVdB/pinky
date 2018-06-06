@@ -6,9 +6,6 @@ import Import
 
 import Neural
 
-instance GenUnchecked Sigmoid where
-    genUnchecked = pure Sigmoid
-    shrinkUnchecked = const []
+instance GenUnchecked Sigmoid
 
-instance GenValid Sigmoid where
-    genValid = pure Sigmoid
+instance GenValid Sigmoid

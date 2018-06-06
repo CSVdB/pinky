@@ -45,7 +45,7 @@ class UpdateLayer x =>
     where
     type Tape x i o :: *
     runForwards :: x -> S i -> (Tape x i o, S o)
-    runBackwards :: Momentum x -> Tape x i o -> S o -> (Gradient x, S i)
+    runBackwards :: x -> Tape x i o -> S o -> (Gradient x, S i)
 
 applyMomentum ::
        (Prod Double x x, Min x, Plus x)

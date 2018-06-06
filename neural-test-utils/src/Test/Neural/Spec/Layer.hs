@@ -73,10 +73,10 @@ layerSpec =
                  ]) $
             it "creates valids on valids" $
             forAllValid $ \(tape :: Tape x i o) ->
-                forAllValid $ \(mom :: Momentum x) ->
+                forAllValid $ \(net :: x) ->
                     forAllValid $ \(outpt :: S o) ->
                         shouldBeValid
-                            (runBackwards mom tape outpt :: (Gradient x, S i))
+                            (runBackwards net tape outpt :: (Gradient x, S i))
         describe
             (unwords
                  [ "applyGradient :: HyperParams ->"

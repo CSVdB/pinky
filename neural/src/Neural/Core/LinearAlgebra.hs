@@ -1,6 +1,8 @@
 module Neural.Core.LinearAlgebra
     ( V
+    , konstV
     , M
+    , diag
     , (<#>)
     , (<#.>)
     , (<+>)

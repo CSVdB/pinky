@@ -18,6 +18,7 @@ spec = do
     layerSpec @Resize @ResizedImageShape @ImageShape
     layerSpec @Resize @ImageShape @ResizedImageShape
     layerSpec @Sigmoid @ImageShape @ImageShape
+    layerSpec @Softmax @OShape @OShape
     layerSpec @NNetTest @ImageShape @ImageShape
     layerSpec @NNet @ImageShape @OShape
     describe "Resize" $ do

@@ -24,8 +24,7 @@ instance CreateRandom Reshape where
 instance UpdateLayer Reshape where
     applyGradient _ _ _ = Momentum Reshape Reshape
 
-instance Validity Reshape where
-    validate = trivialValidation
+instance Validity Reshape
 
 instance (Reshapeable i o, Reshapeable o i) => Layer Reshape i o where
     type Tape Reshape i o = ()

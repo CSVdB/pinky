@@ -23,8 +23,7 @@ instance CreateRandom Sigmoid where
 instance UpdateLayer Sigmoid where
     applyGradient _ _ _ = Momentum Sigmoid Sigmoid
 
-instance Validity Sigmoid where
-    validate = trivialValidation
+instance Validity Sigmoid
 
 sigmoid :: Floating a => a -> a
 sigmoid x = 1 / (1 + exp (-x))
