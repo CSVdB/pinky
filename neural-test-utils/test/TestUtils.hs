@@ -54,3 +54,11 @@ type NNet
      = Network '[ Reshape, FullyConnected I H, Sigmoid, FullyConnected H O, Sigmoid] '[ ImageShape, IShape, HShape, HShape, OShape, OShape]
 
 type NNetTest = Network '[] '[ ImageShape]
+
+type Xpad = 5
+
+type Ypad = 5
+
+type ResizedImageShape = 'D2 (Xdim + Xpad) (Ydim + Ypad)
+
+type ResizedImage = S ResizedImageShape

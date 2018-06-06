@@ -38,6 +38,7 @@ library:
   - Neural.Core.HyperParams.Internal
   - Neural.Layers
   - Neural.Layers.Convolutional
+  - Neural.Layers.Resize
   - Neural.Layers.FullyConnected
   - Neural.Layers.Reshape
   - Neural.Layers.Sigmoid

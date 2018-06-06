@@ -7,6 +7,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Neural.Core.LinearAlgebra.Internal where
 
@@ -211,3 +212,56 @@ instance KnownNat n => ElemProd (V n) where
 
 instance (KnownNat m, KnownNat n) => ElemProd (M m n) where
     M m <#.> M m' = M $ m * m'
+
+toDoubleList :: (KnownNat a, KnownNat b) => M a b -> [[Double]]
+toDoubleList (M m) = NLA.toLists $ Hmatrix.extract m
+
+applyListOpOnV ::
+       (KnownNat n, KnownNat n') => ([Double] -> [Double]) -> V n -> V n'
+applyListOpOnV f (V v) =
+    V $ Hmatrix.fromList $ f $ NLA.toList $ Hmatrix.unwrap v
+
+applyListOpOnM ::
+       (KnownNat m, KnownNat m', KnownNat n, KnownNat n')
+    => ([[Double]] -> [[Double]])
+    -> M m n
+    -> M m' n'
+applyListOpOnM f (M m) =
+    M $ Hmatrix.fromList . concat $ f $ NLA.toLists $ Hmatrix.unwrap m
+
+crop1d :: Int -> [a] -> [a]
+crop1d n xs = drop n xs
+
+pad1d :: a -> Int -> [a] -> [a]
+pad1d a n xs = replicate n a ++ xs
+
+resizeV ::
+       forall n n'. (KnownNat n, KnownNat n')
+    => V n
+    -> V n'
+resizeV =
+    let i = natToInt @n
+        i' = natToInt @n'
+     in if i < i'
+            then applyListOpOnV (pad1d 0 $ i' - i)
+            else applyListOpOnV (crop1d $ i - i')
+
+crop2d :: Int -> Int -> [[a]] -> [[a]]
+crop2d x y xs = crop1d y $ crop1d x <$> xs
+
+resizeM ::
+       forall m m' n n'. (KnownNat m, KnownNat m', KnownNat n, KnownNat n')
+    => M m n
+    -> M m' n'
+resizeM matr =
+    let i = natToInt @m
+        i' = natToInt @m'
+        j = natToInt @n
+        j' = natToInt @n'
+        horResized =
+            if i < i'
+                then applyListOpOnM (fmap $ pad1d 0 $ i' - i) matr :: M m n'
+                else applyListOpOnM (fmap $ crop1d $ i - i') matr :: M m n'
+     in if j < j'
+            then applyListOpOnM (pad1d (replicate j' 0) $ j' - j) horResized
+            else applyListOpOnM (crop1d $ j - j') horResized

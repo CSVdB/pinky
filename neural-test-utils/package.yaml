@@ -35,6 +35,7 @@ library:
   - Test.Neural.Core.LinearAlgebraGen
   - Test.Neural.Layers.FullyConnected
   - Test.Neural.Layers.Reshape
+  - Test.Neural.Layers.Resize
   - Test.Neural.Layers.Sigmoid
   - Test.Neural.Layers.Gen
   - Test.Neural.ParamOpt.Gen

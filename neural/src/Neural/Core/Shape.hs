@@ -50,7 +50,12 @@ instance (KnownNat a, KnownNat b, KnownNat c, KnownNat (a * c)) =>
 
 deriving instance Show (S n)
 
-instance Validity (S (n :: Shape)) where
+instance Eq (S n) where
+    S1D v == S1D v' = v == v'
+    S2D m == S2D m' = m == m'
+    S3D m == S3D m' = m == m'
+
+instance Validity (S n) where
     validate (S1D v) = delve "1D shape" v
     validate (S2D m) = delve "2D shape" m
     validate (S3D m) = delve "3D shape" m

@@ -19,6 +19,10 @@ module Neural.Core.LinearAlgebra
     , intToV
     , listToV
     , listToM
+    , unsafeListToM
+    , toDoubleList
+    , resizeV
+    , resizeM
     ) where
 
 import Neural.Core.LinearAlgebra.Internal

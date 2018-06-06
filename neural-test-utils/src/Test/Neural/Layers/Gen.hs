@@ -7,6 +7,7 @@ module Test.Neural.Layers.Gen
 import Test.Neural.Core.Gen ()
 import Test.Neural.Layers.FullyConnected ()
 import Test.Neural.Layers.Reshape ()
+import Test.Neural.Layers.Resize ()
 import Test.Neural.Layers.Sigmoid ()
 
 import Import
