@@ -1,0 +1,57 @@
+name:                pinky
+version:             0.0.0.0
+synopsis:            Pinky network library in Haskell
+description:         Please see the README on GitHub at <https://github.com/Nickske666/pinky#readme>
+category:            Data science
+github:              "NickVdB/pinky/pinky"
+license:             BSD3
+author:              "Nick Van den Broeck"
+maintainer:          nick.van.den.broeck@hotmail.com
+copyright:           "2018 Nick Van den Broeck"
+
+dependencies:
+- aeson
+- base >= 4.7 && < 5
+- hmatrix >= 0.18
+- MonadRandom
+- mtl
+- random
+- random-shuffle
+- singletons
+- validity >= 0.4.0.4
+- vector
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  default-extensions:
+  - NoImplicitPrelude
+  exposed-modules:
+  - Import
+  - Pinky
+  - Pinky.Core.Shape
+  - Pinky.Core.LinearAlgebra
+  - Pinky.Core.LinearAlgebra.Internal
+  - Pinky.Core.Layer
+  - Pinky.Core.Network
+  - Pinky.Core.HyperParams
+  - Pinky.Core.HyperParams.Internal
+  - Pinky.Layers
+  - Pinky.Layers.Convolutional
+  - Pinky.Layers.Resize
+  - Pinky.Layers.FullyConnected
+  - Pinky.Layers.Reshape
+  - Pinky.Layers.Sigmoid
+  - Pinky.Layers.Softmax
+  - Pinky.Utils.PositiveDouble
+  - Pinky.Utils.PositiveDouble.Internal
+  - Pinky.Utils.PositiveInt
+  - Pinky.Utils.PositiveInt.Internal
+  - Pinky.Utils.ProperFraction
+  - Pinky.Utils.ProperFraction.Internal
+  - Pinky.Utils.Proxy
+  - Pinky.CreateRandom
+  - Pinky.ParamOpt
+  - Pinky.ParamOpt.DataSet
+  - Pinky.ParamOpt.Train
+  - Pinky.ParamOpt.Accuracy

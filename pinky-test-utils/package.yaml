@@ -1,0 +1,73 @@
+name:                pinky-test-utils
+version:             0.0.0.0
+synopsis:            Generators and tests for Pinky
+description:         Please see the README on GitHub at <https://github.com/Nickske666/pinky-test-utils#readme>
+category:            Data science
+license:             BSD3
+author:              "Nick Van den Broeck"
+maintainer:          nick.van.den.broeck@hotmail.com
+copyright:           "2018 Nick Van den Broeck"
+
+dependencies:
+- aeson
+- base >= 4.7 && < 5
+- hmatrix >= 0.18
+- hspec
+- genvalidity >= 0.4.0.4
+- genvalidity-hspec >= 0.5
+- MonadRandom
+- mtl
+- pinky
+- QuickCheck
+- random
+- random-shuffle
+- singletons
+- validity >= 0.4.0.4
+- vector
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  default-extensions:
+  - NoImplicitPrelude
+  exposed-modules:
+  - Test.Pinky.Core.Gen
+  - Test.Pinky.Core.LinearAlgebraGen
+  - Test.Pinky.Layers.FullyConnected
+  - Test.Pinky.Layers.Reshape
+  - Test.Pinky.Layers.Resize
+  - Test.Pinky.Layers.Sigmoid
+  - Test.Pinky.Layers.Softmax
+  - Test.Pinky.Layers.Gen
+  - Test.Pinky.ParamOpt.Gen
+  - Test.Pinky.Spec.CreateRandom
+  - Test.Pinky.Spec.Layer
+  - Test.Pinky.Spec.Gen
+  - Test.Pinky.Utils.Gen
+  other-modules:
+  - Import
+  - Utils
+
+tests:
+  pinky-test:
+    main:                Spec.hs
+    source-dirs:         test
+    default-extensions:
+    - NoImplicitPrelude
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - pinky-test-utils
+    other-modules:
+    - TestImport
+    - TestUtils
+    - Test.Pinky.Core.InstanceSpec
+    - Test.Pinky.Core.LinearAlgebraSpec
+    - Test.Pinky.Core.HyperParamSpec
+    - Test.Pinky.Utils.InstanceSpec
+    - Test.Pinky.Layers.LayerSpec
+    - Test.Pinky.ParamOpt.ParamOptSpec
+    - Test.Pinky.ParamOpt.InstanceSpec
