@@ -25,6 +25,17 @@ import Control.Monad.State.Lazy
 
 import GHC.IO.Encoding
 
+main :: IO ()
+main = do
+    setLocaleEncoding utf8
+    defaultMain
+        [ bench "Generate input" $ eval genInputShape
+        , bench "Generate NNet" $ eval $ createRandomM @IO @NNet
+        , bench "Generate input and runForwards on NNet" $
+          eval genAndRunForwards
+        , bench "Train NNet on MNIST" $ eval trainNNet
+        ]
+
 type Xdim = 28
 
 type Ydim = 28
@@ -51,17 +62,6 @@ type NNet
      = Network '[ Reshape, FullyConnected I H, Sigmoid, FullyConnected H O, Sigmoid] '[ ImageShape, IShape, HShape, HShape, OShape, OShape]
 
 type NNetData = DataSet ImageShape OShape
-
-main :: IO ()
-main = do
-    setLocaleEncoding utf8
-    defaultMain
-        [ bench "Generate input" $ eval genInputShape
-        , bench "Generate NNet" $ eval $ createRandomM @IO @NNet
-        , bench "Generate input and runForwards on NNet" $
-          eval genAndRunForwards
-        , bench "Train NNet on MNIST" $ eval trainNNet
-        ]
 
 eval :: IO a -> Benchmarkable
 eval action =
