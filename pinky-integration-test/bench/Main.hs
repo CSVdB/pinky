@@ -3,8 +3,8 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Main
-  ( main
-  ) where
+    ( main
+    ) where
 
 import Criterion.Main
 
@@ -48,29 +48,32 @@ type OShape = 'D1 O
 type FCL = FullyConnected I O
 
 type NNet
-   = Network '[ Reshape, FullyConnected I H, Sigmoid, FullyConnected H O, Sigmoid] '[ ImageShape, IShape, HShape, HShape, OShape, OShape]
+     = Network '[ Reshape, FullyConnected I H, Sigmoid, FullyConnected H O, Sigmoid] '[ ImageShape, IShape, HShape, HShape, OShape, OShape]
 
 type NNetData = DataSet ImageShape OShape
 
 main :: IO ()
 main = do
-  setLocaleEncoding utf8
-  defaultMain
-    [ bench "Generate input and runForwards on NNet" $ eval genAndRunForwards
-    , bench "Train NNet on MNIST" $ eval trainNNet
-    ]
+    setLocaleEncoding utf8
+    defaultMain
+        [ bench "Generate input" $ eval genInputShape
+        , bench "Generate NNet" $ eval $ createRandomM @IO @NNet
+        , bench "Generate input and runForwards on NNet" $
+          eval genAndRunForwards
+        , bench "Train NNet on MNIST" $ eval trainNNet
+        ]
 
 eval :: IO a -> Benchmarkable
 eval action =
-  nfIO $ do
-    result <- action
-    seq result $ pure ()
+    nfIO $ do
+        result <- action
+        seq result $ pure ()
 
 genAndRunForwards :: IO (S OShape)
 genAndRunForwards = do
-  inpt <- genInputShape
-  net <- createRandomM @IO @NNet
-  pure . snd $ runForwards net inpt
+    inpt <- genInputShape
+    net <- createRandomM @IO @NNet
+    pure . snd $ runForwards net inpt
 
 genInputShape :: IO (S ImageShape)
 genInputShape = generate genValid
@@ -87,6 +90,6 @@ epochs = 2
 
 trainNNet :: IO (Momentum NNet)
 trainNNet = do
-  momNet <- createRandomM @IO @(Momentum NNet)
-  (trainSet, _, _) <- load nOfTrain nOfVal nOfTest
-  pure $ evalState (trainNetwork momNet trainSet epochs) params
+    momNet <- createRandomM @IO @(Momentum NNet)
+    (trainSet, _, _) <- load nOfTrain nOfVal nOfTest
+    pure $ evalState (trainNetwork momNet trainSet epochs) params
