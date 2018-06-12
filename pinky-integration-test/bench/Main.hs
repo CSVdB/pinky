@@ -23,6 +23,8 @@ import MNIST.Load
 
 import Control.Monad.State.Lazy
 
+import GHC.IO.Encoding
+
 type Xdim = 28
 
 type Ydim = 28
@@ -51,7 +53,10 @@ type NNet
 type NNetData = DataSet ImageShape OShape
 
 main :: IO ()
-main =
+main = do
+  print =<< getLocaleEncoding
+  setLocaleEncoding utf8
+  print =<< getLocaleEncoding
   defaultMain
     [ bench "Generate input" $ eval genInputShape
     , bench "Generate NNet" $ eval $ createRandomM @IO @NNet
