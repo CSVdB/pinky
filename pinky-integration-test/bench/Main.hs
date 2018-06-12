@@ -54,13 +54,9 @@ type NNetData = DataSet ImageShape OShape
 
 main :: IO ()
 main = do
-  print =<< getLocaleEncoding
   setLocaleEncoding utf8
-  print =<< getLocaleEncoding
   defaultMain
-    [ bench "Generate input" $ eval genInputShape
-    , bench "Generate NNet" $ eval $ createRandomM @IO @NNet
-    , bench "Generate input and runForwards on NNet" $ eval genAndRunForwards
+    [ bench "Generate input and runForwards on NNet" $ eval genAndRunForwards
     , bench "Train NNet on MNIST" $ eval trainNNet
     ]
 
