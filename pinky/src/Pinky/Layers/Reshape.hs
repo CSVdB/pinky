@@ -49,8 +49,8 @@ instance ( KnownNat a
          , KnownNat b
          , KnownNat c
          , KnownNat d
-         , KnownNat (a * c)
-         , d ~ (a * c * b)
+         , KnownNat (b * c)
+         , d ~ (a * (b * c))
          ) =>
          Reshapeable ('D1 d) ('D3 a b c) where
     reshape (S1D v) = S3D $ vToM v
@@ -60,15 +60,15 @@ instance ( KnownNat a
          , KnownNat c
          , KnownNat d
          , KnownNat (a * c)
-         , d ~ (a * c * b)
+         , d ~ (a * (b * c))
          ) =>
          Reshapeable ('D3 a b c) ('D1 d) where
     reshape (S3D m) = S1D $ mToV m
 
-instance (KnownNat a, KnownNat b, KnownNat c, KnownNat d, d ~ (a * c)) =>
-         Reshapeable ('D2 d b) ('D3 a b c) where
+instance (KnownNat a, KnownNat b, KnownNat c, KnownNat d, d ~ (b * c)) =>
+         Reshapeable ('D2 a d) ('D3 a b c) where
     reshape (S2D m) = S3D m
 
-instance (KnownNat a, KnownNat b, KnownNat c, KnownNat d, d ~ (a * c)) =>
-         Reshapeable ('D3 a b c) ('D2 d b) where
+instance (KnownNat a, KnownNat b, KnownNat c, KnownNat d, d ~ (b * c)) =>
+         Reshapeable ('D3 a b c) ('D2 a d) where
     reshape (S3D m) = S2D m

@@ -39,8 +39,8 @@ instance forall x x' y y' z. ( KnownNat x'
                              , KnownNat y'
                              , KnownNat x
                              , KnownNat y
-                             , KnownNat (x * z)
-                             , KnownNat (x' * z)
+                             , KnownNat (y * z)
+                             , KnownNat (y' * z)
          ) =>
          Layer Resize ('D3 x y z) ('D3 x' y' z) where
     type Tape Resize ('D3 x y z) ('D3 x' y' z) = ()

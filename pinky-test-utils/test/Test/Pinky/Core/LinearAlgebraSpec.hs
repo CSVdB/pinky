@@ -34,6 +34,20 @@ spec = do
     prodSpec @Double @Matr @Matr
     prodSpec @Matr @Double @Matr
     prodSpec @Matr @Vect2 @Vect
+    describe "trippleListToS" $
+        it "unit test" $
+        let trippleList = replicate 5 (replicate 5 [0, 1])
+            shape = trippleListToS trippleList :: Maybe (S ('D3 5 5 2))
+            outcome =
+                Just $
+                S3D $
+                unsafeFromDoubleList $ replicate 5 (concat $ replicate 5 [0, 1])
+         in shape `shouldBe` outcome
+    describe "Massiv" $ do
+        it "massivToV . vToMassiv == Just" $
+            equivalentOnValid (massivToV . vToMassiv @10) Just
+        it "massivToM . mToMassiv == Just" $
+            equivalentOnValid (massivToM . mToMassiv @10 @15) Just
 
 plusSpec ::
        forall a. (Plus a, GenValid a, Typeable a, Show a)

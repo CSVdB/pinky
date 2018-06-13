@@ -23,8 +23,14 @@ module Pinky.Core.LinearAlgebra
     , listToM
     , unsafeListToM
     , toDoubleList
+    , unsafeFromDoubleList
+    , unsafeFromTrippleList
     , resizeV
     , resizeM
+    , vToMassiv
+    , mToMassiv
+    , massivToV
+    , massivToM
     ) where
 
 import Pinky.Core.LinearAlgebra.Internal

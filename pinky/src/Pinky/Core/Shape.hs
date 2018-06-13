@@ -7,12 +7,14 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Pinky.Core.Shape where
 
 import Import
 
 import Pinky.Core.LinearAlgebra
+import Pinky.Utils
 
 data Shape
     = D1 Nat
@@ -28,15 +30,15 @@ data S (s :: Shape) where
     S1D :: KnownNat n => V n -> S ('D1 n)
     S2D :: (KnownNat i, KnownNat j) => M i j -> S ('D2 i j)
     S3D
-        :: (KnownNat i, KnownNat j, KnownNat k, KnownNat ((*) i k))
-        => M ((*) i k) j
+        :: (KnownNat i, KnownNat j, KnownNat k, KnownNat (j * k))
+        => M i (j * k)
         -> S ('D3 i j k)
 
 data instance  Sing (n :: Shape) where
         D1Sing :: Sing a -> Sing ('D1 a)
         D2Sing :: Sing a -> Sing b -> Sing ('D2 a b)
         D3Sing ::
-            KnownNat (a * c) => Sing a -> Sing b -> Sing c -> Sing ('D3 a b c)
+            KnownNat (b * c) => Sing a -> Sing b -> Sing c -> Sing ('D3 a b c)
 
 instance KnownNat a => SingI ('D1 a) where
     sing = D1Sing sing
@@ -44,7 +46,7 @@ instance KnownNat a => SingI ('D1 a) where
 instance (KnownNat a, KnownNat b) => SingI ('D2 a b) where
     sing = D2Sing sing sing
 
-instance (KnownNat a, KnownNat b, KnownNat c, KnownNat (a * c)) =>
+instance (KnownNat a, KnownNat b, KnownNat c, KnownNat (b * c)) =>
          SingI ('D3 a b c) where
     sing = D3Sing sing sing sing
 
@@ -89,6 +91,27 @@ listToS xs =
         D1Sing SNat -> S1D <$> listToV xs
         D2Sing SNat SNat -> S2D <$> listToM xs
         D3Sing SNat SNat SNat -> S3D <$> listToM xs
+
+doubleListToM ::
+       forall m n. (KnownNat m, KnownNat n)
+    => [[Double]]
+    -> Maybe (S ('D2 m n))
+doubleListToM xs =
+    let m' = natToInt @m
+        n' = natToInt @n
+     in if m' == length xs && n' == length (head xs)
+            then Just . S2D $ unsafeFromDoubleList xs
+            else Nothing
+
+trippleListToS ::
+       forall i j k. (KnownNat i, KnownNat j, KnownNat k, KnownNat (j * k))
+    => [[[Double]]]
+    -> Maybe (S ('D3 i j k))
+trippleListToS xs =
+    if natToInt @i == length xs &&
+       natToInt @j == length (head xs) && natToInt @k == length (head (head xs))
+        then Just . S3D $ unsafeFromTrippleList xs
+        else Nothing
 
 intToS :: KnownNat n => Int -> Maybe (S ('D1 n))
 intToS = fmap S1D . intToV

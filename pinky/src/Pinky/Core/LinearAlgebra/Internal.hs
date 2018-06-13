@@ -18,11 +18,17 @@ import Pinky.Utils.Proxy
 
 import System.Random
 
+import Data.Vector.Storable (Vector)
 import qualified Data.Vector.Storable as SV
 import qualified Numeric.LinearAlgebra as NLA
 import qualified Numeric.LinearAlgebra.Static as Hmatrix
 
 import Unsafe.Coerce
+
+import qualified Data.Massiv.Array.Manifest as Massiv
+import Data.Massiv.Array.Manifest.Vector (fromVector, toVector)
+import Data.Massiv.Core (Array, Comp(..))
+import Data.Massiv.Core.Index (Ix1, Ix2(..))
 
 instance KnownNat n => Eq (Hmatrix.R n) where
     a == b = Hmatrix.extract a == Hmatrix.extract b
@@ -89,7 +95,7 @@ instance (KnownNat m, KnownNat k, KnownNat n) =>
 instance (KnownNat m, KnownNat n) => Prod (M m n) (V n) (V m) where
     M m <#> V v = V $ m Hmatrix.#> v
 
-unsafeToV :: KnownNat n => SV.Vector Double -> V n
+unsafeToV :: KnownNat n => Vector Double -> V n
 unsafeToV = unsafeCoerce
     --V . fromJust . Hmatrix.create
 
@@ -222,6 +228,15 @@ instance (KnownNat m, KnownNat n) => ElemProd (M m n) where
 toDoubleList :: (KnownNat a, KnownNat b) => M a b -> [[Double]]
 toDoubleList (M m) = NLA.toLists $ Hmatrix.extract m
 
+unsafeFromDoubleList :: (KnownNat a, KnownNat b) => [[Double]] -> M a b
+unsafeFromDoubleList = M . Hmatrix.fromList . concat
+
+unsafeFromTrippleList ::
+       forall m n. (KnownNat m, KnownNat n)
+    => [[[Double]]]
+    -> M m n
+unsafeFromTrippleList xs = unsafeFromDoubleList $ fmap concat xs
+
 applyListOpOnV ::
        (KnownNat n, KnownNat n') => ([Double] -> [Double]) -> V n -> V n'
 applyListOpOnV f (V v) =
@@ -233,7 +248,7 @@ applyListOpOnM ::
     -> M m n
     -> M m' n'
 applyListOpOnM f (M m) =
-    M $ Hmatrix.fromList . concat $ f $ NLA.toLists $ Hmatrix.unwrap m
+    unsafeFromDoubleList $ f $ NLA.toLists $ Hmatrix.unwrap m
 
 crop1d :: Int -> [a] -> [a]
 crop1d n xs = drop n xs
@@ -271,3 +286,28 @@ resizeM matr =
      in if j < j'
             then applyListOpOnM (pad1d (replicate j' 0) $ j' - j) horResized
             else applyListOpOnM (crop1d $ j - j') horResized
+
+vToMassiv ::
+       forall n. KnownNat n
+    => V n
+    -> Array Massiv.S Ix1 Double
+vToMassiv (V v) = fromVector Par (natToInt @n) $ Hmatrix.unwrap v
+
+mToMassiv ::
+       forall m n. (KnownNat m, KnownNat n)
+    => M m n
+    -> Array Massiv.S Ix2 Double
+mToMassiv (M m) =
+    fromVector Par (natToInt @m :. natToInt @n) $ NLA.flatten $ Hmatrix.unwrap m
+
+massivToV ::
+       forall n. KnownNat n
+    => Array Massiv.S Ix1 Double
+    -> Maybe (V n)
+massivToV = fmap V . Hmatrix.create . toVector
+
+massivToM ::
+       forall m n. (KnownNat m, KnownNat n)
+    => Array Massiv.S Ix2 Double
+    -> Maybe (M m n)
+massivToM = fmap M . Hmatrix.create . NLA.reshape (natToInt @n) . toVector
