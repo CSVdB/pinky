@@ -27,10 +27,6 @@ module Pinky.Core.LinearAlgebra
     , unsafeFromTrippleList
     , resizeV
     , resizeM
-    , vToMassiv
-    , mToMassiv
-    , massivToV
-    , massivToM
     ) where
 
 import Pinky.Core.LinearAlgebra.Internal

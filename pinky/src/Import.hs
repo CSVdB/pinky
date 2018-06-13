@@ -14,3 +14,5 @@ import Data.Monoid as X hiding (Last)
 import Data.Singletons as X
 import Data.Singletons.TypeLits as X
 import Data.Validity as X
+
+import Control.Applicative as X

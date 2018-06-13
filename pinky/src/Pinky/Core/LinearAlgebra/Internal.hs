@@ -8,6 +8,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Pinky.Core.LinearAlgebra.Internal where
 
@@ -27,8 +28,9 @@ import Unsafe.Coerce
 
 import qualified Data.Massiv.Array.Manifest as Massiv
 import Data.Massiv.Array.Manifest.Vector (fromVector, toVector)
+import Data.Massiv.Array.Stencil (Stencil(..))
 import Data.Massiv.Core (Array, Comp(..))
-import Data.Massiv.Core.Index (Ix1, Ix2(..))
+import Data.Massiv.Core.Index (Index(..), Ix1, Ix2(..), Ix3(..))
 
 instance KnownNat n => Eq (Hmatrix.R n) where
     a == b = Hmatrix.extract a == Hmatrix.extract b
@@ -287,27 +289,14 @@ resizeM matr =
             then applyListOpOnM (pad1d (replicate j' 0) $ j' - j) horResized
             else applyListOpOnM (crop1d $ j - j') horResized
 
-vToMassiv ::
-       forall n. KnownNat n
-    => V n
-    -> Array Massiv.S Ix1 Double
-vToMassiv (V v) = fromVector Par (natToInt @n) $ Hmatrix.unwrap v
+instance Index ix => Validity (Stencil ix Double Double) where
+    validate = trivialValidation
 
-mToMassiv ::
-       forall m n. (KnownNat m, KnownNat n)
-    => M m n
-    -> Array Massiv.S Ix2 Double
-mToMassiv (M m) =
-    fromVector Par (natToInt @m :. natToInt @n) $ NLA.flatten $ Hmatrix.unwrap m
+instance (Prod Double a a, Functor f) => Prod Double (f a) (f a) where
+    x <#> v = fmap ((<#>) x) v
 
-massivToV ::
-       forall n. KnownNat n
-    => Array Massiv.S Ix1 Double
-    -> Maybe (V n)
-massivToV = fmap V . Hmatrix.create . toVector
+instance (Applicative f, Plus a) => Plus (f a) where
+    (<+>) = liftA2 (<+>)
 
-massivToM ::
-       forall m n. (KnownNat m, KnownNat n)
-    => Array Massiv.S Ix2 Double
-    -> Maybe (M m n)
-massivToM = fmap M . Hmatrix.create . NLA.reshape (natToInt @n) . toVector
+instance (Applicative f, Min a) => Min (f a) where
+    (<->) = liftA2 (<->)

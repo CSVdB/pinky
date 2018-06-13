@@ -16,6 +16,15 @@ import Import
 import Pinky.Core.LinearAlgebra
 import Pinky.Utils
 
+import qualified Numeric.LinearAlgebra as NLA
+import qualified Numeric.LinearAlgebra.Static as Hmatrix
+
+import qualified Data.Massiv.Array.Manifest as Massiv
+import Data.Massiv.Array.Manifest.Vector (fromVector, toVector)
+import Data.Massiv.Array.Stencil (Stencil(..))
+import Data.Massiv.Core (Array, Comp(..))
+import Data.Massiv.Core.Index (Index(..), Ix1, Ix2(..), Ix3, IxN(..))
+
 data Shape
     = D1 Nat
     | D2 Nat
@@ -115,3 +124,41 @@ trippleListToS xs =
 
 intToS :: KnownNat n => Int -> Maybe (S ('D1 n))
 intToS = fmap S1D . intToV
+
+s1ToMassive ::
+       forall n. KnownNat n
+    => S ('D1 n)
+    -> Array Massiv.S Ix1 Double
+s1ToMassive (S1D v) = fromVector Par (natToInt @n) $ Hmatrix.unwrap v
+
+s2ToMassive ::
+       forall m n. (KnownNat m, KnownNat n)
+    => S ('D2 m n)
+    -> Array Massiv.S Ix2 Double
+s2ToMassive (S2D m) =
+    fromVector Par (natToInt @m :. natToInt @n) $ Hmatrix.unwrap m
+
+s3ToMassive ::
+       forall i j k. (KnownNat i, KnownNat j, KnownNat k)
+    => S ('D3 i j k)
+    -> Array Massiv.S Ix3 Double
+s3ToMassive (S3D m) =
+    fromVector Par (natToInt @i :> natToInt @j :. natToInt @k) $
+    Hmatrix.unwrap m
+
+massiveToS1 :: KnownNat n => Array Massiv.S Ix1 Double -> Maybe (S ('D1 n))
+massiveToS1 = fmap (S1D . V) . Hmatrix.create . toVector
+
+massiveToS2 ::
+       forall m n. (KnownNat m, KnownNat n)
+    => Array Massiv.S Ix2 Double
+    -> Maybe (S ('D2 m n))
+massiveToS2 =
+    fmap (S2D . M) . Hmatrix.create . NLA.reshape (natToInt @n) . toVector
+
+massiveToS3 ::
+       forall i j k. (KnownNat i, KnownNat j, KnownNat k, KnownNat (j * k))
+    => Array Massiv.S Ix3 Double
+    -> S ('D3 i j k)
+massiveToS3 =
+    fmap (S3D . M) . Hmatrix.create . NLA.reshape (natToInt @(j * k)) . toVector
