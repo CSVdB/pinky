@@ -300,3 +300,21 @@ instance (Applicative f, Plus a) => Plus (f a) where
 
 instance (Applicative f, Min a) => Min (f a) where
     (<->) = liftA2 (<->)
+
+convolution ::
+       forall x y x' y' k k' s s'.
+       ( KnownNat x
+       , KnownNat x'
+       , KnownNat y
+       , KnownNat y'
+       , KnownNat k
+       , KnownNat k'
+       , s ~ (x + k - k * x')
+       , KnownNat s
+       , s' ~ (y + k' - k' * y')
+       , KnownNat s'
+       )
+    => M x y
+    -> M k k'
+    -> M x' y'
+convolution = undefined

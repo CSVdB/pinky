@@ -8,6 +8,7 @@ module Test.Pinky.Core.LinearAlgebraSpec where
 import Pinky
 
 import Test.Hspec
+import Test.Pinky.Core.Gen ()
 import Test.Pinky.Core.LinearAlgebraGen ()
 import Test.Validity
 import TestImport
@@ -44,10 +45,12 @@ spec = do
                 unsafeFromDoubleList $ replicate 5 (concat $ replicate 5 [0, 1])
          in shape `shouldBe` outcome
     describe "Massiv" $ do
-        it "massivToV . vToMassiv == Just" $
-            equivalentOnValid (massivToV . vToMassiv @10) Just
-        it "massivToM . mToMassiv == Just" $
-            equivalentOnValid (massivToM . mToMassiv @10 @15) Just
+        it "massivToS1 . s1ToMassiv == Just" $
+            equivalentOnValid (massivToS1 . s1ToMassiv @10) Just
+        it "massivToS2 . s2ToMassiv == Just" $
+            equivalentOnValid (massivToS2 . s2ToMassiv @10 @12) Just
+        it "massivToS3 . s3ToMassiv == Just" $
+            equivalentOnValid (massivToS3 . s3ToMassiv @10 @12 @14) Just
 
 plusSpec ::
        forall a. (Plus a, GenValid a, Typeable a, Show a)

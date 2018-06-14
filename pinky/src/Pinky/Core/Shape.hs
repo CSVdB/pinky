@@ -13,7 +13,7 @@ module Pinky.Core.Shape where
 
 import Import
 
-import Pinky.Core.LinearAlgebra
+import Pinky.Core.LinearAlgebra.Internal
 import Pinky.Utils
 
 import qualified Numeric.LinearAlgebra as NLA
@@ -33,8 +33,6 @@ data Shape
          Nat
          Nat
 
--- TODO: Once haskell-src-exts can parse "i * k" in types,
--- change the (*) notation.
 data S (s :: Shape) where
     S1D :: KnownNat n => V n -> S ('D1 n)
     S2D :: (KnownNat i, KnownNat j) => M i j -> S ('D2 i j)
@@ -125,40 +123,40 @@ trippleListToS xs =
 intToS :: KnownNat n => Int -> Maybe (S ('D1 n))
 intToS = fmap S1D . intToV
 
-s1ToMassive ::
+s1ToMassiv ::
        forall n. KnownNat n
     => S ('D1 n)
     -> Array Massiv.S Ix1 Double
-s1ToMassive (S1D v) = fromVector Par (natToInt @n) $ Hmatrix.unwrap v
+s1ToMassiv (S1D (V v)) = fromVector Par (natToInt @n) $ Hmatrix.unwrap v
 
-s2ToMassive ::
+s2ToMassiv ::
        forall m n. (KnownNat m, KnownNat n)
     => S ('D2 m n)
     -> Array Massiv.S Ix2 Double
-s2ToMassive (S2D m) =
-    fromVector Par (natToInt @m :. natToInt @n) $ Hmatrix.unwrap m
+s2ToMassiv (S2D (M m)) =
+    fromVector Par (natToInt @m :. natToInt @n) . NLA.flatten $ Hmatrix.unwrap m
 
-s3ToMassive ::
+s3ToMassiv ::
        forall i j k. (KnownNat i, KnownNat j, KnownNat k)
     => S ('D3 i j k)
     -> Array Massiv.S Ix3 Double
-s3ToMassive (S3D m) =
-    fromVector Par (natToInt @i :> natToInt @j :. natToInt @k) $
+s3ToMassiv (S3D (M m)) =
+    fromVector Par (natToInt @i :> natToInt @j :. natToInt @k) . NLA.flatten $
     Hmatrix.unwrap m
 
-massiveToS1 :: KnownNat n => Array Massiv.S Ix1 Double -> Maybe (S ('D1 n))
-massiveToS1 = fmap (S1D . V) . Hmatrix.create . toVector
+massivToS1 :: KnownNat n => Array Massiv.S Ix1 Double -> Maybe (S ('D1 n))
+massivToS1 = fmap (S1D . V) . Hmatrix.create . toVector
 
-massiveToS2 ::
+massivToS2 ::
        forall m n. (KnownNat m, KnownNat n)
     => Array Massiv.S Ix2 Double
     -> Maybe (S ('D2 m n))
-massiveToS2 =
+massivToS2 =
     fmap (S2D . M) . Hmatrix.create . NLA.reshape (natToInt @n) . toVector
 
-massiveToS3 ::
+massivToS3 ::
        forall i j k. (KnownNat i, KnownNat j, KnownNat k, KnownNat (j * k))
     => Array Massiv.S Ix3 Double
-    -> S ('D3 i j k)
-massiveToS3 =
+    -> Maybe (S ('D3 i j k))
+massivToS3 =
     fmap (S3D . M) . Hmatrix.create . NLA.reshape (natToInt @(j * k)) . toVector

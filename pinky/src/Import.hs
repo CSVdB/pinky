@@ -4,7 +4,7 @@ module Import
 
 import Prelude as X
 
-import GHC.Generics as X hiding (S)
+import GHC.Generics as X hiding (D, S)
 import GHC.Natural as X
 import GHC.TypeLits as X
 
