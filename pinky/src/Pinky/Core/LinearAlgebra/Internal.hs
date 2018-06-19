@@ -15,7 +15,7 @@ module Pinky.Core.LinearAlgebra.Internal where
 import Import
 
 import Pinky.CreateRandom
-import Pinky.Utils.Proxy
+import Pinky.Utils
 
 import System.Random
 

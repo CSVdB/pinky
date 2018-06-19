@@ -22,10 +22,9 @@ import Pinky.CreateRandom
 import Pinky.Layers.Reshape
 import Pinky.Utils
 
-import Data.Massiv.Array (Array, Stencil, backpermute, compute, size)
+import Data.Massiv.Array (Array, Stencil)
 import Data.Massiv.Array.Delayed (D)
 import qualified Data.Massiv.Array.Manifest as Manifest
-import Data.Massiv.Array.Stencil (Stencil, mapStencil)
 import Data.Massiv.Core (Load, Mutable, Source)
 import Data.Massiv.Core.Index (Ix2(..), IxN(..))
 
@@ -38,7 +37,7 @@ data Convolutional :: Nat -> Nat -> Nat -> Nat -> Nat -> Nat -> * where
            , KnownNat kernelX
            , KnownNat kernelY
            )
-        => !(Stencil (IxN 3) Double Double)
+        => !(MyVec chanOut (Stencil Ix2 Double Double))
         -> Convolutional chanIn chanOut kernelX kernelY strideX strideY
 
 instance ( KnownNat c
@@ -74,7 +73,8 @@ instance ( KnownNat c
          , KnownNat k'
          ) =>
          Validity (Convolutional c c' s s' k k') where
-    validate (Convolutional kernel) = delve "kernel" kernel
+    validate (Convolutional kernels) =
+        decorate "kernels" $ foldMap validate kernels
 
 instance ( KnownNat s
          , KnownNat s'
@@ -119,21 +119,6 @@ instance ( KnownNat c
          Layer (Convolutional c c' s s' k k') ('D3 x y c) ('D3 x' y' c') where
     type Tape (Convolutional c c' s s' k k') ('D3 x y c) ('D3 x' y' c') = S ('D3 x y c)
     runForwards (Convolutional kernel) inpt =
-        let outpt =
-                fromJust . massivToS3 . compute $
-                resizeMassiv (natToInt @s) (natToInt @s') $
-                (compute . mapStencil kernel $ s3ToMassiv inpt :: Array Manifest.S (IxN 3) Double)
+        let outpt = undefined
          in (inpt, outpt)
     runBackwards = undefined
-
-resizeMassiv ::
-       Source r (IxN 3) Double
-    => Int
-    -> Int
-    -> Array r (IxN 3) Double
-    -> Array D (IxN 3) Double
-resizeMassiv s s' arr = backpermute newSize indexMap arr
-  where
-    (x :> y :. z) = size arr
-    newSize = (x + s - 1 `div` s) :> (y + s' - 1 `div` s) :. z
-    indexMap (a :> b :. c) = (s * a) :> (s' * b) :. c

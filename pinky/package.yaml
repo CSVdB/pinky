@@ -51,6 +51,7 @@ library:
   - Pinky.Utils.ProperFraction
   - Pinky.Utils.ProperFraction.Internal
   - Pinky.Utils.Proxy
+  - Pinky.Utils.MyVec
   - Pinky.CreateRandom
   - Pinky.ParamOpt
   - Pinky.ParamOpt.DataSet
