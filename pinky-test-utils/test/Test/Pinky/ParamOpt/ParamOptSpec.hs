@@ -13,6 +13,7 @@ import Pinky
 import Test.Pinky.Layers.Gen ()
 
 import Control.Monad.State.Lazy
+import Control.Monad.Trans.Reader
 
 spec :: Spec
 spec = do
@@ -29,7 +30,9 @@ spec = do
         forAllValid @NNet $ \net ->
             forAllValid $ \inpt ->
                 forAllValid $ \label ->
-                    shouldBeValid $ getGradientOfNetwork net inpt label
+                    shouldBeValid $
+                    flip runReader sumSquareError $
+                    getGradientOfNetwork net inpt label
     describe
         "runIteration :: Momentum NNet -> DataSet -> State HyperParams NNet" $
         it "produces valids on valids" $
@@ -37,7 +40,8 @@ spec = do
             forAllValid $ \dataset ->
                 forAllValid $ \hp ->
                     shouldBeValid $
-                    flip evalState hp $ runIteration momNet dataset
+                    flip runReader sumSquareError $
+                    flip evalStateT hp $ runIteration momNet dataset
     describe
         "trainNetwork :: Momentum NNet -> DataSet -> Natural -> State HyperParams (Momentum NNet)" $
         it "produces valids on valids" $
@@ -46,7 +50,8 @@ spec = do
                 forAllValid $ \epochs ->
                     forAllValid $ \hp ->
                         shouldBeValid $
-                        flip evalState hp $ trainNetwork momNet dataset epochs
+                        flip runReader sumSquareError $
+                        flip evalStateT hp $ trainNetwork momNet dataset epochs
     describe "accuracy :: NNet -> DataSet -> ClassificationAccuracy" $
         it "produces valids on valids" $
         forAllValid @NNet $ \net ->

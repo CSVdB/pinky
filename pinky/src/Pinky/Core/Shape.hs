@@ -160,3 +160,13 @@ massivToS3 ::
     -> Maybe (S ('D3 i j k))
 massivToS3 =
     fmap (S3D . M) . Hmatrix.create . NLA.reshape (natToInt @(j * k)) . toVector
+
+konstS ::
+       forall n. SingI n
+    => Double
+    -> S n
+konstS x =
+    case sing :: Sing n of
+        D1Sing SNat -> S1D $ konstV x
+        D2Sing SNat SNat -> S2D $ konstM x
+        D3Sing SNat SNat SNat -> S3D $ konstM x

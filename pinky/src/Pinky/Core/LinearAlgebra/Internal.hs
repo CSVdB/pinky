@@ -45,6 +45,9 @@ newtype V (n :: Nat) =
 konstV :: KnownNat n => Double -> V n
 konstV = V . Hmatrix.konst
 
+konstM :: (KnownNat m, KnownNat n) => Double -> M m n
+konstM = M . Hmatrix.konst
+
 instance KnownNat n => CreateRandom (V n) where
     createRandom seed =
         let (int, seed') = next seed

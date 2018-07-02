@@ -1,4 +1,5 @@
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE FlexibleContexts #-}
 
@@ -16,6 +17,7 @@ import MNIST.Load
 
 import Control.Monad.Random.Lazy
 import Control.Monad.State.Lazy
+import Control.Monad.Trans.Reader
 
 nOfTrain, nOfVal, nOfTest :: Int
 nOfTrain = 3500
@@ -39,13 +41,16 @@ main = hspec spec
 spec :: Spec
 spec =
     describe "MNIST" $
-    it "unit test network training" $ do
-        let stdGen = mkStdGen 4
-        let momNet =
-                evalRand (createRandomM @(Rand StdGen) @(Momentum NN)) stdGen
-        (!trainSet, _, testSet) <- load nOfTrain nOfVal nOfTest
-        let !(Momentum trainedNet _) =
-                evalState (trainNetwork momNet trainSet epochs) params
-        let testAcc = accuracy trainedNet testSet
-        let minAcc = unsafeConstructAcc 0.81
-        testAcc `shouldSatisfy` (> minAcc)
+    it "unit test network training" $ nnMnistTest sumSquareError
+
+nnMnistTest :: ErrorFunc ('D1 10) -> Expectation
+nnMnistTest errFunc = do
+    let stdGen = mkStdGen 4
+    let momNet = evalRand (createRandomM @(Rand StdGen) @(Momentum NN)) stdGen
+    (!trainSet, _, testSet) <- load nOfTrain nOfVal nOfTest
+    let !(Momentum trainedNet _) =
+            flip runReader errFunc $
+            evalStateT (trainNetwork momNet trainSet epochs) params
+    let testAcc = accuracy trainedNet testSet
+    let minAcc = unsafeConstructAcc 0.81
+    testAcc `shouldSatisfy` (> minAcc)

@@ -16,9 +16,10 @@ dependencies:
 - massiv >= 0.1.6
 - MonadRandom
 - mtl
+- singletons
+- transformers
 - random
 - random-shuffle
-- singletons
 - validity >= 0.4.0.4
 - vector
 

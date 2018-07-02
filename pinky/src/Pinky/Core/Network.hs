@@ -8,6 +8,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Pinky.Core.Network
@@ -17,6 +18,10 @@ module Pinky.Core.Network
     , getGradientOfNetwork
     , applyGradientToNetwork
     , runNetwork
+    , ErrorFunc
+    , sumSquareError
+    , crossEntropyError
+    , exponentialError
     ) where
 
 import Import
@@ -26,6 +31,8 @@ import Pinky.Core.Layer
 import Pinky.Core.LinearAlgebra
 import Pinky.Core.Shape
 import Pinky.CreateRandom
+
+import Control.Monad.Trans.Reader
 
 import Data.Singletons.Prelude (Head, Last)
 
@@ -150,16 +157,55 @@ instance ( CreateRandom (Network layers shapes)
     runForwards = runNetwork
     runBackwards = networkGradient
 
+data ErrorFunc (o :: Shape) = ErrorFunc
+    { errFunc :: S o -> S o -> S o
+    }
+
 getGradientOfNetwork ::
        (i ~ Head shapes, o ~ Last shapes)
     => Network layers shapes
     -> S i
     -> S o
-    -> Gradient (Network layers shapes)
-getGradientOfNetwork net inpt label =
+    -> Reader (ErrorFunc o) (Gradient (Network layers shapes))
+getGradientOfNetwork net inpt label = do
     let (!tapes, !outpt) = runNetwork net inpt
-     in fst $ networkGradient net tapes $ sumSquareError' outpt label
+    (ErrorFunc err) <- ask
+    pure $ fst $ networkGradient net tapes $ err outpt label
+
+sumSquareError :: ErrorFunc o
+sumSquareError = ErrorFunc sumSquareError'
+
+crossEntropyError ::
+       (Prod Double (S o) (S o), Prod (S o) (S o) Double, SingI o)
+    => ErrorFunc o
+crossEntropyError = ErrorFunc crossEntropyError'
+
+exponentialError ::
+       (Prod (S o) (S o) Double, Prod Double (S o) (S o), SingI o)
+    => Double
+    -> ErrorFunc o
+exponentialError x = ErrorFunc $ expError' x
 
 -- The derivative of the cost function as evaluated on output and label
 sumSquareError' :: S o -> S o -> S o
 sumSquareError' outpt label = outpt <-> label
+
+crossEntropyError' ::
+       (Prod Double (S o) (S o), Prod (S o) (S o) Double, SingI o)
+    => S o
+    -> S o
+    -> S o
+crossEntropyError' outpt label = prefactor <#> (outpt <-> label)
+  where
+    prefactor = 1 / ((konstS 1 <-> outpt) <#> outpt)
+
+expError' ::
+       (Prod (S o) (S o) Double, Prod Double (S o) (S o), SingI o)
+    => Double
+    -> S o
+    -> S o
+    -> S o
+expError' x outpt label = prefactor <#> (outpt <-> label)
+  where
+    normSquared = (outpt <-> label) <#> (outpt <-> label)
+    prefactor = 2 * exp (normSquared / x)
