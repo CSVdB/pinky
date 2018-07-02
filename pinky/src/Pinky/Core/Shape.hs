@@ -8,6 +8,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Pinky.Core.Shape where
 
@@ -170,3 +171,9 @@ konstS x =
         D1Sing SNat -> S1D $ konstV x
         D2Sing SNat SNat -> S2D $ konstM x
         D3Sing SNat SNat SNat -> S3D $ konstM x
+
+instance Prod Double (S ('D1 n)) (S ('D1 n)) where
+    x <#> S1D v = S1D $ x <#> v
+
+instance Prod (S ('D1 n)) (S ('D1 n)) Double where
+    S1D v <#> S1D v' = v <#> v'

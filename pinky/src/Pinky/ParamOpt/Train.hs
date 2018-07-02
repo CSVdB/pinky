@@ -38,7 +38,7 @@ runIteration ::
        , net ~ Network layers shapes
        , mom ~ Momentum net
        )
-    => mom
+    => Momentum net
     -> DataSet i o
     -> MyState o mom
 runIteration mom0 dataset = do

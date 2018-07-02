@@ -40,11 +40,18 @@ main = hspec spec
 
 spec :: Spec
 spec =
-    describe "MNIST" $
-    it "unit test network training" $ nnMnistTest sumSquareError
+    describe "MNIST" $ do
+        it "unit test network training with sumSquareError" $
+            nnMnistTest 0.81 sumSquareError
+        it "unit test network training with crossEntropyError" $
+            nnMnistTest 0.79 crossEntropyError
+        -- Put the following tests back once you implemented automated
+        -- hyperparameter optimisation.
+        --it "unit test network training with exponentialError" $
+        --    nnMnistTest 0.70 $ exponentialError 1
 
-nnMnistTest :: ErrorFunc ('D1 10) -> Expectation
-nnMnistTest errFunc = do
+nnMnistTest :: Double -> ErrorFunc ('D1 10) -> Expectation
+nnMnistTest minAccD errFunc = do
     let stdGen = mkStdGen 4
     let momNet = evalRand (createRandomM @(Rand StdGen) @(Momentum NN)) stdGen
     (!trainSet, _, testSet) <- load nOfTrain nOfVal nOfTest
@@ -52,5 +59,6 @@ nnMnistTest errFunc = do
             flip runReader errFunc $
             evalStateT (trainNetwork momNet trainSet epochs) params
     let testAcc = accuracy trainedNet testSet
-    let minAcc = unsafeConstructAcc 0.81
+    let minAcc = unsafeConstructAcc minAccD
+    print testAcc
     testAcc `shouldSatisfy` (> minAcc)
