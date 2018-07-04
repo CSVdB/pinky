@@ -256,7 +256,7 @@ applyListOpOnM f (M m) =
     unsafeFromDoubleList $ f $ NLA.toLists $ Hmatrix.unwrap m
 
 crop1d :: Int -> [a] -> [a]
-crop1d n xs = drop n xs
+crop1d = drop
 
 pad1d :: a -> Int -> [a] -> [a]
 pad1d a n xs = replicate n a ++ xs
@@ -296,7 +296,7 @@ instance Index ix => Validity (Stencil ix Double Double) where
     validate = trivialValidation
 
 instance (Prod Double a a, Functor f) => Prod Double (f a) (f a) where
-    x <#> v = fmap ((<#>) x) v
+    x <#> v = fmap (x <#>) v
 
 instance (Applicative f, Plus a) => Plus (f a) where
     (<+>) = liftA2 (<+>)

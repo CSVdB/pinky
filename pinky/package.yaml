@@ -60,3 +60,5 @@ library:
   - Pinky.ParamOpt.DataSet
   - Pinky.ParamOpt.Train
   - Pinky.ParamOpt.Accuracy
+  - Pinky.HyperOpt
+  - Pinky.HyperOpt.Train

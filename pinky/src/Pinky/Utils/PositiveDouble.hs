@@ -5,6 +5,7 @@ module Pinky.Utils.PositiveDouble
     , posOne
     , pMultiply
     , dMultiply
+    , pDivide
     ) where
 
 import Import
@@ -17,3 +18,6 @@ pMultiply x y = constructPositiveDouble $ posToDouble x * posToDouble y
 
 dMultiply :: PositiveDouble -> ProperFraction -> PositiveDouble
 dMultiply (PositiveDouble x) pf = PositiveDouble $ x * fracToDouble pf
+
+pDivide :: PositiveDouble -> PositiveDouble -> PositiveDouble
+pDivide (PositiveDouble x) (PositiveDouble y) = PositiveDouble $ x / y

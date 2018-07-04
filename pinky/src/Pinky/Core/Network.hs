@@ -8,7 +8,6 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Pinky.Core.Network
@@ -157,7 +156,7 @@ instance ( CreateRandom (Network layers shapes)
     runForwards = runNetwork
     runBackwards = networkGradient
 
-data ErrorFunc (o :: Shape) = ErrorFunc
+newtype ErrorFunc (o :: Shape) = ErrorFunc
     { errFunc :: S o -> S o -> S o
     }
 
@@ -199,6 +198,7 @@ crossEntropyError' outpt label = prefactor <#> (outpt <-> label)
   where
     prefactor = 1 / ((konstS 1 <-> outpt) <#> outpt)
 
+-- Isn't actually used in practice
 expError' ::
        (Prod (S o) (S o) Double, Prod Double (S o) (S o), SingI o)
     => Double

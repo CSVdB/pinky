@@ -29,8 +29,8 @@ instance CreateRandom x => CreateRandom (Momentum x) where
             (m, seed'') = createRandom seed'
          in (Momentum p m, seed'')
 
-data Gradient x =
-    Gradient !x
+newtype Gradient x =
+    Gradient x
     deriving (Eq, Show, Generic)
 
 instance Validity x => Validity (Gradient x)

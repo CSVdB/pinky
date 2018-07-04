@@ -7,7 +7,7 @@ module Pinky.Utils.MyVec
 
 import Import
 
-data MyVec (n :: Nat) a = MyVec
+newtype MyVec (n :: Nat) a = MyVec
     { myVec :: [a]
     } deriving (Show, Eq)
 

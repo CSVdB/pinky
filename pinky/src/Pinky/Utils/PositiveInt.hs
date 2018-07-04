@@ -5,6 +5,7 @@ module Pinky.Utils.PositiveInt
     , posToNum
     , constructPositiveInt
     , takePos
+    , piDivide
     ) where
 
 import Import
@@ -21,3 +22,6 @@ posToNum ::
     => PositiveInt
     -> a
 posToNum (PositiveInt n) = fromIntegral n
+
+piDivide :: PositiveInt -> PositiveInt -> PositiveInt
+piDivide (PositiveInt m) (PositiveInt n) = PositiveInt $ m `div` n
