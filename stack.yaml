@@ -2,7 +2,6 @@ packages:
 - pinky
 - pinky-test-utils
 - pinky-example
-- pinky-test-utils
 resolver: lts-11.10
 nix:
   packages: [blas, liblapack, gfortran.cc.lib]
@@ -17,6 +16,7 @@ extra-deps:
 - base-compat-0.10.1
 - aeson-1.3.1.1
 - criterion-1.4.1.0
+- transformers-0.5.5.0
 - git: git@github.com:Nickske666/massiv.git
   commit: 1b20398766da1c4e8cdb274feffde10de8965ab9
   subdirs:

@@ -17,6 +17,7 @@ import MNIST.Load
 
 import Control.Monad.Random.Lazy
 import Control.Monad.State.Lazy
+import Control.Monad.Trans.Reader
 
 nOfTrain, nOfVal, nOfTest :: Int
 nOfTrain = 3500
@@ -54,7 +55,9 @@ spec =
                         stdGen
             (!trainSet, _, testSet) <- load nOfTrain nOfVal nOfTest
             let !(Momentum trainedNet _) =
-                    evalState (trainNetwork momNet trainSet epochs) NN.params
+                    flip runReader sumSquareError $
+                    flip evalStateT NN.params $
+                    trainNetwork momNet trainSet epochs
             let testAcc = accuracy trainedNet testSet
             let minAcc = unsafeConstructAcc 0.81
             testAcc `shouldSatisfy` (> minAcc)
@@ -66,7 +69,9 @@ spec =
                         stdGen
             (!trainSet, _, testSet) <- load nOfTrain' nOfVal' nOfTest'
             let !(Momentum trainedNet _) =
-                    evalState (trainNetwork momNet trainSet epochs) CNN.params
+                    flip runReader sumSquareError $
+                    flip evalState CNN.params $
+                    trainNetwork momNet trainSet epochs
             let testAcc = accuracy trainedNet testSet
             let minAcc = unsafeConstructAcc 0.81
             testAcc `shouldSatisfy` (> minAcc)

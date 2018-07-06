@@ -22,7 +22,7 @@ dependencies:
 - pinky
 - QuickCheck
 - singletons
-- transformers
+- transformers >=0.5.5
 - random
 - random-shuffle
 - validity >= 0.4.0.4
@@ -38,6 +38,7 @@ library:
   - Test.Pinky.Core.LinearAlgebraGen
   - Test.Pinky.Layers.Elu
   - Test.Pinky.Layers.Convolutional
+  - Test.Pinky.Layers.ConvAlt
   - Test.Pinky.Layers.FullyConnected
   - Test.Pinky.Layers.Relu
   - Test.Pinky.Layers.MaxPool

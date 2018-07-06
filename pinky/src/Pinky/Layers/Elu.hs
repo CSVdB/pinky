@@ -22,9 +22,7 @@ data Elu = Elu
 instance CreateRandom Double
 
 instance CreateRandom Elu where
-    createRandom seed =
-        let (x, seed') = createRandom seed
-         in (Elu x, seed')
+    createRandom seed = (Elu 1, seed)
 
 instance UpdateLayer Elu where
     applyGradient x _ _ = x

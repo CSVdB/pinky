@@ -19,6 +19,7 @@ dependencies:
 - MonadRandom
 - mtl
 - singletons
+- split
 - transformers
 - random
 - random-shuffle
@@ -42,17 +43,17 @@ library:
   - Pinky.Core.HyperParams.Internal
   - Pinky.Core.Massiv
   - Pinky.Layers
+  - Pinky.Layers.ConvAlt
   - Pinky.Layers.Convolutional
   - Pinky.Layers.Elu
-  - Pinky.Layers.Relu
-  - Pinky.Layers.Resize
   - Pinky.Layers.FullyConnected
   - Pinky.Layers.MaxPool
   - Pinky.Layers.MaxPool.Internal
+  - Pinky.Layers.Relu
+  - Pinky.Layers.Resize
   - Pinky.Layers.Sigmoid
   - Pinky.Layers.Softmax
   - Pinky.Layers.Reshape
-  - Pinky.Layers.Resize
   - Pinky.Utils
   - Pinky.Utils.PositiveDouble
   - Pinky.Utils.PositiveDouble.Internal

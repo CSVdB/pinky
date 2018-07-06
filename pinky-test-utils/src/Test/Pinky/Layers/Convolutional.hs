@@ -17,7 +17,7 @@ import Data.Massiv.Array
 import Data.Massiv.Array.Manifest.Vector
 
 genPosInt :: Gen Int
-genPosInt = abs <$> genValid `suchThat` (> 0)
+genPosInt = (+ 1) . abs <$> genValid
 
 instance ( KnownNat c
          , KnownNat c'

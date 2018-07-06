@@ -5,11 +5,11 @@ module Test.Pinky.Layers.Gen
     ) where
 
 import Test.Pinky.Core.Gen ()
+import Test.Pinky.Layers.ConvAlt ()
 import Test.Pinky.Layers.Convolutional ()
 import Test.Pinky.Layers.Elu ()
 import Test.Pinky.Layers.FullyConnected ()
 import Test.Pinky.Layers.MaxPool ()
-import Test.Pinky.Layers.MaxPooling ()
 import Test.Pinky.Layers.Relu ()
 import Test.Pinky.Layers.Reshape ()
 import Test.Pinky.Layers.Resize ()
@@ -22,4 +22,5 @@ import Pinky
 
 instance GenUnchecked x => GenUnchecked (Gradient x)
 
-instance GenValid x => GenValid (Gradient x)
+instance GenValid x => GenValid (Gradient x) where
+    genValid = Gradient <$> genValid

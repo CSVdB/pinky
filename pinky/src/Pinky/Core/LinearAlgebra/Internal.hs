@@ -12,7 +12,7 @@
 
 module Pinky.Core.LinearAlgebra.Internal where
 
-import Import
+import Import hiding (foldl1')
 
 import Pinky.CreateRandom
 import Pinky.Utils
@@ -25,6 +25,8 @@ import qualified Numeric.LinearAlgebra as NLA
 import qualified Numeric.LinearAlgebra.Static as Hmatrix
 
 import Unsafe.Coerce
+
+import Data.List.Split (chunksOf)
 
 import Data.Massiv.Array (Array(..), compute)
 import Data.Massiv.Array.Delayed
@@ -325,3 +327,17 @@ instance Plus a => Plus (MyVec n a) where
 
 instance Min a => Min (MyVec n a) where
     (<->) = liftA2 (<->)
+
+splitMatrices ::
+       forall m n c.
+       (KnownNat m, KnownNat n, KnownNat c, KnownNat (n * c), 1 <= c)
+    => M m (n * c)
+    -> MyVec c (M m n)
+splitMatrices (M m) =
+    let m' = natToInt @m
+        n' = natToInt @n
+        matrices =
+            chunksOf (m' * n') . NLA.toList . NLA.flatten . NLA.tr $
+            Hmatrix.unwrap m
+     in fromJust . mkMyVec $
+        M . fromJust . Hmatrix.create . NLA.tr . (n' NLA.>< m') <$> matrices

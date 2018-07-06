@@ -2,6 +2,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Test.Pinky.Layers.LayerSpec where
 
@@ -34,6 +36,10 @@ import Data.Massiv.Core (Index, Ix2(..), Ix3, IxN(..))
 type Conv = Convolutional 1 1 3 2 2 4
 
 type Conv2 = Convolutional 2 1 3 2 2 4
+
+type ConvA = ConvAlt 1 1 3 2 2 4
+
+type ConvA2 = ConvAlt 2 1 3 2 2 4
 
 spec :: Spec
 spec = do
@@ -112,9 +118,72 @@ spec = do
                 dCdz =
                     unsafeListsToS [[1, 0], [0, 0], [2, 0], [0, 0]] :: S ('D2 4 2)
              in snd (runBackwards MaxPool (fst outpt) dCdz') `shouldBe` dCdz
-  where
-    unsafeListsToS :: (KnownNat m, KnownNat n) => [[Double]] -> S ('D2 m n)
-    unsafeListsToS = fromJust . doubleListToS
+    --layerSpec @(ConvAlt 1 1 5 5 3 3) @('D2 28 13) @('D2 6 3)
+    --layerSpec @(ConvAlt 1 5 5 5 3 3) @('D2 28 28) @('D3 6 6 5)
+    describe "ConvAlt" $ do
+        describe "unit tests for 'D2 4 2 -> 'D2 2 1" $
+            let inpt =
+                    unsafeListsToS [[8, 7], [6, 5], [4, 3], [2, 1]] :: S ('D2 4 2)
+                kern = fromLists' Par $ fmap (fmap pure) [[-1, 0], [0, 1]]
+                conv =
+                    ConvAlt . fromJust $ mkMyVec [kern] :: ConvAlt 1 1 2 2 2 2
+                outpt = unsafeListsToS [[3], [3]] :: S ('D2 2 1)
+                dCdz' = unsafeListsToS [[-1], [1]] :: S ('D2 2 1)
+                dCdz =
+                    unsafeListsToS [[-1, 0], [0, 1], [1, 0], [0, -1]] :: S ('D2 4 2)
+                expectedGrad =
+                    Gradient . ConvAlt . fromJust $
+                    mkMyVec
+                        @1
+                        [fromLists' Par $ fmap (fmap pure) [[-4, -4], [-4, -4]]]
+             in convAltUnitTests inpt outpt conv expectedGrad dCdz dCdz'
+        --describe "unit tests for 'D3 5 5 2 -> 'D3 2 3 3" $ do
+        --    let inpt =
+        --            unsafeListsToS3 (replicate 5 $ replicate 5 $ replicate 2 1) :: S ('D3 5 5 2)
+        --    let conv =
+        --            ConvAlt . fromJust $
+        --            mkMyVec
+        --                [ fromLists' Par $
+        --                  fmap (fmap $ \x -> [x, x]) [[-1, 0], [0, 1]]
+        --                ] :: ConvAlt 2 3 2 1 2 3
+        --    let outpt = undefined
+        --    let dCdz' = undefined
+        --    let dCdz = undefined
+        --    let expectedGrad = undefined
+        --     in convAltUnitTests inpt outpt conv expectedGrad dCdz dCdz'
+
+convAltUnitTests ::
+       ( convAlt ~ ConvAlt c c' s s' k k'
+       , Layer convAlt i o
+       , S i ~ Tape convAlt i o
+       )
+    => S i
+    -> S o
+    -> convAlt
+    -> Gradient convAlt
+    -> S i
+    -> S o
+    -> Spec
+convAltUnitTests inpt outpt conv expectedGrad dCdz dCdz' = do
+    it "genValid doesn't fail" $ do
+        convol <- generate $ genValid @ConvA
+        seq convol $ pure ()
+    it "isValid doesn't fail" $ do
+        convol <- generate $ genValid @ConvA
+        isValid convol `shouldBe` True
+    it "unit test for runForwards" $
+        snd (runForwards conv inpt) `shouldBe` outpt
+    it "unit test for runBackwards" $
+        runBackwards conv inpt dCdz' `shouldBe` (expectedGrad, dCdz)
+
+unsafeListsToS :: (KnownNat m, KnownNat n) => [[Double]] -> S ('D2 m n)
+unsafeListsToS = fromJust . doubleListToS
+
+unsafeListsToS3 ::
+       (KnownNat i, KnownNat j, KnownNat k, KnownNat (j * k))
+    => [[[Double]]]
+    -> S ('D3 i j k)
+unsafeListsToS3 = fromJust . trippleListToS
 
 maxPoolingStencil :: Index ix => ix -> Stencil ix Double Double
 maxPoolingStencil poolSz =

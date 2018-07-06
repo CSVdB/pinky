@@ -16,6 +16,7 @@ import Pinky.Utils
 import qualified Numeric.LinearAlgebra as NLA
 import qualified Numeric.LinearAlgebra.Static as Hmatrix
 
+import Data.Massiv.Array hiding (M, S)
 import qualified Data.Massiv.Array.Manifest as Massiv
 import Data.Massiv.Array.Manifest.Vector (fromVector, toVector)
 import Data.Massiv.Array.Stencil (Stencil(..))

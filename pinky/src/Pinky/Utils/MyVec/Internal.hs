@@ -40,3 +40,14 @@ mkMyVec xs =
 -- This function is total because of the condition n > 0.
 splitFirst :: (KnownNat n, 1 <= n) => MyVec n a -> (a, [a])
 splitFirst (MyVec (x:xs)) = (x, xs)
+splitFirst (MyVec _) = error "Called splitFirst on an empty MyVec"
+
+foldl1' :: (1 <= n) => (a -> a -> a) -> MyVec n a -> a
+foldl1' f (MyVec (x:xs)) = foldl' f x xs
+foldl1' _ (MyVec _) = error "Called foldl1' on an empty MyVec"
+
+zipMyVec :: MyVec n a -> MyVec n b -> MyVec n (a, b)
+zipMyVec (MyVec as) (MyVec bs) = MyVec $ zip as bs
+
+unsafeMyVecElem :: MyVec n a -> Int -> a
+unsafeMyVecElem (MyVec xs) = (!!) xs

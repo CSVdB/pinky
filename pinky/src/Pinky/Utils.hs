@@ -1,6 +1,6 @@
 module Pinky.Utils
     ( module Pinky.CreateRandom
-    ( module Pinky.Utils.Div
+    , module Pinky.Utils.Div
     , module Pinky.Utils.MyVec
     , module Pinky.Utils.PositiveDouble
     , module Pinky.Utils.PositiveInt

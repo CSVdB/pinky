@@ -15,7 +15,7 @@ module Pinky.Layers.Convolutional
     , genConv
     ) where
 
-import Import
+import Import hiding (foldl1')
 
 import Pinky.Core
 import Pinky.CreateRandom
@@ -27,10 +27,16 @@ import Data.Massiv.Array
     , Comp(..)
     , D
     , DW
+    , Manifest
     , Stencil
+    , (!)
+    , (.+)
+    , compute
     , computeAs
+    , delay
     , liftIndex
     , liftIndex2
+    , makeArray
     , size
     )
 import Data.Massiv.Array.Delayed (D, DW)
