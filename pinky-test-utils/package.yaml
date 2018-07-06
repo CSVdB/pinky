@@ -34,7 +34,9 @@ library:
   exposed-modules:
   - Test.Pinky.Core.Gen
   - Test.Pinky.Core.LinearAlgebraGen
+  - Test.Pinky.Layers.Elu
   - Test.Pinky.Layers.FullyConnected
+  - Test.Pinky.Layers.Relu
   - Test.Pinky.Layers.Reshape
   - Test.Pinky.Layers.Resize
   - Test.Pinky.Layers.Sigmoid

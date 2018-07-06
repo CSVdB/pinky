@@ -29,3 +29,5 @@ spec = do
             forAllValid @Image $ \inpt ->
                 let resizedInpt = snd $ runForwards Resize inpt :: ResizedImage
                  in snd (runForwards Resize resizedInpt) `shouldBe` inpt
+    layerSpec @Elu @OShape @OShape
+    layerSpec @Relu @OShape @OShape

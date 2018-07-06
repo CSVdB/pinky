@@ -40,6 +40,8 @@ library:
   - Pinky.Core.HyperParams.Internal
   - Pinky.Layers
   - Pinky.Layers.Convolutional
+  - Pinky.Layers.Elu
+  - Pinky.Layers.Relu
   - Pinky.Layers.Resize
   - Pinky.Layers.FullyConnected
   - Pinky.Layers.Reshape
