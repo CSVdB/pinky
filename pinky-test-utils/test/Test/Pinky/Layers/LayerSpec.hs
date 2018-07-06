@@ -52,6 +52,27 @@ spec = do
         it "isValid doesn't fail" $ do
             conv@(Convolutional !kernels) <- generate $ genValid @Conv
             isValid conv `shouldBe` True
+        it "unit test for runForwards" $
+            let inpt =
+                    fromJust $ doubleListToS [[8, 7], [6, 5], [4, 3], [2, 1]] :: S ('D2 4 2)
+                conv =
+                    Convolutional . fromJust $
+                    mkMyVec @1 [fromLists' Par [[-1, 0], [0, 1]]] :: Convolutional 1 1 2 2 2 2
+                outpt = fromJust $ doubleListToS [[3], [3]] :: S ('D2 2 1)
+             in snd (runForwards conv inpt) `shouldBe` outpt
+        it "unit test for runBackwards" $
+            let inpt =
+                    fromJust $ doubleListToS [[8, 7], [6, 5], [4, 3], [2, 1]] :: S ('D2 4 2)
+                conv =
+                    Convolutional . fromJust $
+                    mkMyVec @1 [fromLists' Par [[-1, 0], [0, 1]]] :: Convolutional 1 1 2 2 2 2
+                dCdz' = fromJust $ doubleListToS [[-1], [1]] :: S ('D2 2 1)
+                dCdz =
+                    fromJust $ doubleListToS [[-1, 0], [0, 1], [1, 0], [0, -1]] :: S ('D2 4 2)
+                expectedGrad =
+                    Gradient . Convolutional . fromJust $
+                    mkMyVec @1 [fromLists' Par [[-4, -4], [-4, -4]]]
+             in runBackwards conv inpt dCdz' `shouldBe` (expectedGrad, dCdz)
     layerSpec @Conv @('D2 8 8) @('D2 3 3)
     layerSpec @Conv2 @('D3 8 4 2) @('D2 3 3)
     describe "Resize" $ do

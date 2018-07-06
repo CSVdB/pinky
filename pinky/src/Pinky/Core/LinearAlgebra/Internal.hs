@@ -257,7 +257,7 @@ applyListOpOnM f (M m) =
     unsafeFromDoubleList $ f $ NLA.toLists $ Hmatrix.unwrap m
 
 crop1d :: Int -> [a] -> [a]
-crop1d n xs = drop n xs
+crop1d = drop
 
 pad1d :: a -> Int -> [a] -> [a]
 pad1d a n xs = replicate n a ++ xs
@@ -318,7 +318,7 @@ instance Index ix => Min (Array Manifest.S ix Double) where
     (<->) a = compute . (.-) a
 
 instance Prod Double a a => Prod Double (MyVec n a) (MyVec n a) where
-    x <#> v = fmap ((<#>) x) v
+    x <#> v = (x <#>) <$> v
 
 instance Plus a => Plus (MyVec n a) where
     (<+>) = liftA2 (<+>)

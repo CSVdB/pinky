@@ -1,11 +1,9 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -115,8 +113,8 @@ maxPoolingStencilAccumFunc ::
 maxPoolingStencilAccumFunc poolSz accumFunc initFunc =
     makeStencil poolSz sCenter getMax
   where
-    startIx = pureIndex 0
-    sCenter = pureIndex 0
+    startIx = zeroIndex
+    sCenter = zeroIndex
     getMax get =
         iter startIx poolSz 1 (<) (initFunc get startIx) $ accumFunc get
     {-# INLINE getMax #-}
@@ -142,15 +140,15 @@ maxPool ::
     => ix -- ^ Size of the maxpooling
     -> Array r ix e -- ^ Array to be maxpooled
     -> Array DW ix e
-maxPool poolSz arr =
-    maxPoolAccumFunc poolSz (\get ix val -> max <$> val <*> get ix) id arr
+maxPool poolSz =
+    maxPoolAccumFunc poolSz (\get ix val -> max <$> val <*> get ix) id
 
 maxPoolIx ::
        (Manifest r ix e, Default e, Ord e)
     => ix -- ^ Size of the maxpooling
     -> Array r ix e -- ^ Array to be maxpooled
     -> Array DW ix (e, ix)
-maxPoolIx poolSz arr = maxPoolAccumFunc poolSz maxIxAccum getValIx arr
+maxPoolIx poolSz = maxPoolAccumFunc poolSz maxIxAccum getValIx
 
 instance ( KnownNat a
          , KnownNat b

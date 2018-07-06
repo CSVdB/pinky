@@ -65,3 +65,16 @@ makeChannels ::
     => MyVec c (M m n)
     -> S ('D3 m n c)
 makeChannels vec = S3D $ mergeMatrices vec
+
+splitChannels ::
+       forall c n m.
+       (KnownNat m, KnownNat n, KnownNat c, KnownNat (n * c), 1 <= c)
+    => S ('D3 m n c)
+    -> MyVec c (M m n)
+splitChannels (S3D m) = splitMatrices m
+
+flipArr :: Source r ix e => Array r ix e -> Array D ix e
+flipArr arr = backpermute sz indexMap arr
+  where
+    sz = size arr
+    indexMap = liftIndex2 (-) $ liftIndex2 (-) sz $ pureIndex 1

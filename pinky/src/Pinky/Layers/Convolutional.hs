@@ -1,11 +1,9 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -64,6 +62,9 @@ data Convolutional :: Nat -> Nat -> Nat -> Nat -> Nat -> Nat -> * where
            )
         => !(MyVec chanOut (Array Manifest.S Ix2 Double))
         -> Convolutional chanIn chanOut kernelX kernelY strideX strideY
+
+instance Eq (Convolutional c c' s s' k k') where
+    Convolutional kern == Convolutional kern' = kern == kern'
 
 instance Show (Convolutional c c' s s' k k') where
     show (Convolutional kernels) = "Convolutional\n" ++ show kernels
@@ -175,13 +176,12 @@ conv ::
     -> Array Manifest.S Ix2 Double
     -> M x' y'
 conv (strideX :. strideY) startIndex m arr =
-    fromJust .
-    massivToM . computeAs Manifest.S . reformDW toNewIndex toOldIndex newSize $
+    fromJust . massivToM . compute . reformDW toNewIndex toOldIndex newSize $
     mapStencil (Fill 0) stencil $ mToMassiv m
   where
     toNewIndex ix =
         let (a :. b) = liftIndex2 (-) ix startIndex
-         in a `divRoundUp` strideX :. b `divRoundUp` strideY
+         in a `div` strideX :. b `div` strideY
     toOldIndex (a :. b) = liftIndex2 (+) startIndex $ strideX * a :. strideY * b
     newSize = natToInt @x' :. natToInt @y'
     stencil = makeConvolutionStencilFromKernel arr
@@ -189,16 +189,25 @@ conv (strideX :. strideY) startIndex m arr =
 backConv ::
        (Manifest r Ix2 e, Num e)
     => Ix2 -- ^ stride of the forwards convolution
-    -> Ix2 -- ^ output size
+    -> Ix2 -- ^ size of resulting array
+    -> Ix2 -- ^ startIndex used for forwards convolution
     -> Array r Ix2 e -- ^ output of forwards convolution
     -> Array r Ix2 e -- ^ kernel
     -> Array r Ix2 e -- ^ backwards convoluted array
-backConv (s :. s') sz outpt kern =
+backConv (s :. s') sz (u :. v) outpt kern =
     makeArray Par sz $ \(a :. b) ->
         sum
-            [ (outpt ! i :. j) * (kern ! s * i - a :. s' * j - b)
-            | i <- [divRoundUp a s .. min (divRoundUp (k + a) s) x - 1]
-            , j <- [divRoundUp b s' .. min (divRoundUp (k' + b) s') y - 1]
+            [ (outpt ! i :. j) * (kern ! s * i + u - a :. s' * j + v - b)
+            | i <-
+                  [max (divRoundUp (a - u) s) 0 .. min (divRoundUp (k + a - u) s)
+                                                       x -
+                                                   1]
+            , j <-
+                  [max (divRoundUp (b - v) s') 0 .. min (divRoundUp
+                                                             (k' + b - v)
+                                                             s')
+                                                        y -
+                                                    1]
             ]
   where
     (k :. k') = size kern
@@ -232,15 +241,16 @@ instance (Constraints c c' s s' k k' x x' y y') =>
     runBackwards (Convolutional kernels) (S3D inpt) dCdz' =
         let dCdzChannels' = mToMassiv <$> splitChannels dCdz'
             dCdzArrayPerChannel (dCdzM', kern) =
-                delay $ backConv sSize inptSize dCdzM' kern
+                delay $ backConv sSize inptSize kSizeMin1 dCdzM' kern
             dCdz =
                 fromJust . massivToM . compute . foldl1' (.+) $
                 dCdzArrayPerChannel <$> zipMyVec dCdzChannels' kernels
-            gradChannel z dCdzM' = backConv sSize kSize dCdzM' z
+            gradChannel z dCdzM' = backConv sSize kSize kSizeMin1 dCdzM' z
             grad = gradChannel (mToMassiv inpt) <$> dCdzChannels'
          in (Gradient $ Convolutional grad, S3D dCdz)
       where
         inptSize = natToInt @x :. natToInt @(y * c)
         sSize = natToInt @s :. natToInt @s'
         kSize = natToInt @k :. natToInt @k'
+        kSizeMin1 = natToInt @k - 1 :. natToInt @k' - 1
         startIndex = liftIndex (\a -> a `div` 2 - a) kSize
