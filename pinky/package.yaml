@@ -12,6 +12,8 @@ copyright:           "2018 Nick Van den Broeck"
 dependencies:
 - aeson
 - base >= 4.7 && < 5
+- data-default-class
+- extra
 - hmatrix >= 0.18
 - massiv >= 0.1.6
 - MonadRandom
@@ -45,9 +47,11 @@ library:
   - Pinky.Layers.Relu
   - Pinky.Layers.Resize
   - Pinky.Layers.FullyConnected
-  - Pinky.Layers.Reshape
+  - Pinky.Layers.MaxPooling
   - Pinky.Layers.Sigmoid
   - Pinky.Layers.Softmax
+  - Pinky.Layers.Reshape
+  - Pinky.Layers.Resize
   - Pinky.Utils
   - Pinky.Utils.PositiveDouble
   - Pinky.Utils.PositiveDouble.Internal
@@ -58,6 +62,7 @@ library:
   - Pinky.Utils.Proxy
   - Pinky.Utils.MyVec
   - Pinky.Utils.MyVec.Internal
+  - Pinky.Utils.Div
   - Pinky.CreateRandom
   - Pinky.ParamOpt
   - Pinky.ParamOpt.DataSet

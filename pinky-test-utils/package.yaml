@@ -39,6 +39,7 @@ library:
   - Test.Pinky.Layers.Convolutional
   - Test.Pinky.Layers.FullyConnected
   - Test.Pinky.Layers.Relu
+  - Test.Pinky.Layers.MaxPooling
   - Test.Pinky.Layers.Reshape
   - Test.Pinky.Layers.Resize
   - Test.Pinky.Layers.Sigmoid

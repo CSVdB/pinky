@@ -94,11 +94,11 @@ listToS xs =
         D2Sing SNat SNat -> S2D <$> listToM xs
         D3Sing SNat SNat SNat -> S3D <$> listToM xs
 
-doubleListToM ::
+doubleListToS ::
        forall m n. (KnownNat m, KnownNat n)
     => [[Double]]
     -> Maybe (S ('D2 m n))
-doubleListToM xs =
+doubleListToS xs =
     let m' = natToInt @m
         n' = natToInt @n
      in if m' == length xs && n' == length (head xs)

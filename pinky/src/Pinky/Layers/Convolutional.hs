@@ -162,7 +162,47 @@ instance (Constraints 1 c' s s' k k' x x' y y') =>
     runForwards conv inpt =
         let inpt' = reshape inpt :: S ('D3 x y 1)
          in (inpt, snd $ runForwards conv inpt')
-    runBackwards = undefined
+    runBackwards conv inpt dCdz' =
+        let inptR = reshape inpt :: S ('D3 x y 1)
+            (grad, dCdzR :: S ('D3 x y 1)) = runBackwards conv inptR dCdz'
+         in (grad, reshape dCdzR)
+
+conv ::
+       forall x y x' y'. (KnownNat x, KnownNat y, KnownNat x', KnownNat y')
+    => Ix2 -- ^ stride
+    -> Ix2 -- ^ start index
+    -> M x y
+    -> Array Manifest.S Ix2 Double
+    -> M x' y'
+conv (strideX :. strideY) startIndex m arr =
+    fromJust .
+    massivToM . computeAs Manifest.S . reformDW toNewIndex toOldIndex newSize $
+    mapStencil (Fill 0) stencil $ mToMassiv m
+  where
+    toNewIndex ix =
+        let (a :. b) = liftIndex2 (-) ix startIndex
+         in a `divRoundUp` strideX :. b `divRoundUp` strideY
+    toOldIndex (a :. b) = liftIndex2 (+) startIndex $ strideX * a :. strideY * b
+    newSize = natToInt @x' :. natToInt @y'
+    stencil = makeConvolutionStencilFromKernel arr
+
+backConv ::
+       (Manifest r Ix2 e, Num e)
+    => Ix2 -- ^ stride of the forwards convolution
+    -> Ix2 -- ^ output size
+    -> Array r Ix2 e -- ^ output of forwards convolution
+    -> Array r Ix2 e -- ^ kernel
+    -> Array r Ix2 e -- ^ backwards convoluted array
+backConv (s :. s') sz outpt kern =
+    makeArray Par sz $ \(a :. b) ->
+        sum
+            [ (outpt ! i :. j) * (kern ! s * i - a :. s' * j - b)
+            | i <- [divRoundUp a s .. min (divRoundUp (k + a) s) x - 1]
+            , j <- [divRoundUp b s' .. min (divRoundUp (k' + b) s') y - 1]
+            ]
+  where
+    (k :. k') = size kern
+    (x :. y) = size outpt
 
 instance (Constraints c c' s s' k k' x x' y y') =>
          Layer (Convolutional c c' s s' k k') ('D3 x y c) ('D3 x' y' c') where
@@ -188,4 +228,19 @@ instance (Constraints c c' s s' k k' x x' y y') =>
                 liftIndex2 (+) startIndex $ strideX * a :. strideY * b
             newSize = natToInt @x' :. natToInt @y'
             stencil = makeConvolutionStencilFromKernel arr
-    runBackwards = undefined
+        startIndex = liftIndex (`div` 2) (natToInt @k :. natToInt @k')
+    runBackwards (Convolutional kernels) (S3D inpt) dCdz' =
+        let dCdzChannels' = mToMassiv <$> splitChannels dCdz'
+            dCdzArrayPerChannel (dCdzM', kern) =
+                delay $ backConv sSize inptSize dCdzM' kern
+            dCdz =
+                fromJust . massivToM . compute . foldl1' (.+) $
+                dCdzArrayPerChannel <$> zipMyVec dCdzChannels' kernels
+            gradChannel z dCdzM' = backConv sSize kSize dCdzM' z
+            grad = gradChannel (mToMassiv inpt) <$> dCdzChannels'
+         in (Gradient $ Convolutional grad, S3D dCdz)
+      where
+        inptSize = natToInt @x :. natToInt @(y * c)
+        sSize = natToInt @s :. natToInt @s'
+        kSize = natToInt @k :. natToInt @k'
+        startIndex = liftIndex (\a -> a `div` 2 - a) kSize
