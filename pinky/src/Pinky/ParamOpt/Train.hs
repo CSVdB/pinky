@@ -3,6 +3,8 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE DataKinds #-}
 
 module Pinky.ParamOpt.Train
     ( runIteration
@@ -13,6 +15,7 @@ import Import
 
 import Pinky.Core
 
+import Pinky.CreateRandom
 import Pinky.ParamOpt.Accuracy
 import Pinky.ParamOpt.DataSet
 import Pinky.Utils

@@ -13,7 +13,6 @@ import Import
 
 import Pinky.Core
 import Pinky.CreateRandom
-import Pinky.Utils
 
 data Resize =
     Resize
