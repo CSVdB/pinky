@@ -7,6 +7,7 @@ module Test.Pinky.Core.LinearAlgebraGen where
 import Import
 
 import Pinky.Core.LinearAlgebra.Internal
+import Pinky.Utils
 
 import qualified Data.Vector.Storable as SV
 import Numeric.LinearAlgebra.Data (reshape)

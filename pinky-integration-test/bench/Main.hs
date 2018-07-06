@@ -34,6 +34,8 @@ main = do
         , bench "Generate input and runForwards on NNet" $
           eval genAndRunForwards
         , bench "Train NNet on MNIST" $ eval trainNNet
+        , bench "Convolution: Generate input and runForwards" $ eval runConv
+        , bench "Convolution: runBackwards" $ eval runConvBack
         ]
 
 type Xdim = 28
@@ -57,6 +59,12 @@ type O = 10
 type OShape = 'D1 O
 
 type FCL = FullyConnected I O
+
+type MyConv = Convolutional 2 3 5 4 10 8
+
+type Inpt = S ('D3 100 100 2)
+
+type Outpt = S ('D3 19 49 3)
 
 type NNet
      = Network '[ Reshape, FullyConnected I H, Sigmoid, FullyConnected H O, Sigmoid] '[ ImageShape, IShape, HShape, HShape, OShape, OShape]
@@ -93,3 +101,16 @@ trainNNet = do
     momNet <- createRandomM @IO @(Momentum NNet)
     (trainSet, _, _) <- load nOfTrain nOfVal nOfTest
     pure $ evalState (trainNetwork momNet trainSet epochs) params
+
+runConv :: IO Outpt
+runConv = do
+    conv <- generate $ genValid @MyConv
+    inpt <- generate $ genValid @Inpt
+    pure . snd $ runForwards conv inpt
+
+runConvBack :: IO (Gradient MyConv, Inpt)
+runConvBack = do
+    conv <- generate $ genValid @MyConv
+    inpt <- generate $ genValid @Inpt
+    grad <- generate $ genValid @Outpt
+    pure $ runBackwards conv inpt grad

@@ -37,7 +37,7 @@ softmax v =
             then fromJust . intToV . maxIndex $ v
             else mapV (/ s) v'
 
-instance KnownNat n => Layer Softmax ('D1 n) ('D1 n) where
+instance Layer Softmax ('D1 n) ('D1 n) where
     type Tape Softmax ('D1 n) ('D1 n) = S ('D1 n)
     runForwards _ (S1D inpt) =
         let outptS = S1D $ softmax inpt

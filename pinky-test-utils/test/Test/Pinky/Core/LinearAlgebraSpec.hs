@@ -2,6 +2,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Test.Pinky.Core.LinearAlgebraSpec where
 
@@ -45,10 +46,10 @@ spec = do
                 unsafeFromDoubleList $ replicate 5 (concat $ replicate 5 [0, 1])
          in shape `shouldBe` outcome
     describe "Massiv" $ do
-        it "massivToS1 . s1ToMassiv == Just" $
-            equivalentOnValid (massivToS1 . s1ToMassiv @10) Just
-        it "massivToS2 . s2ToMassiv == Just" $
-            equivalentOnValid (massivToS2 . s2ToMassiv @10 @12) Just
+        it "massivToV . vToMassiv == Just" $
+            equivalentOnValid (massivToV . vToMassiv @10) Just
+        it "massivToM . mToMassiv == Just" $
+            equivalentOnValid (massivToM . mToMassiv @10 @12) Just
         it "massivToS3 . s3ToMassiv == Just" $
             equivalentOnValid (massivToS3 . s3ToMassiv @10 @12 @14) Just
 

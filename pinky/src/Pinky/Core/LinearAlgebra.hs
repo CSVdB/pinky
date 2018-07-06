@@ -27,6 +27,7 @@ module Pinky.Core.LinearAlgebra
     , unsafeFromTrippleList
     , resizeV
     , resizeM
+    , mergeMatrices
     ) where
 
 import Pinky.Core.LinearAlgebra.Internal

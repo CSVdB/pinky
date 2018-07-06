@@ -8,6 +8,7 @@ import Utils as X
 
 import Data.GenValidity as X
 
+import Data.Maybe as X
 import Data.Singletons as X
 import Data.Singletons.TypeLits as X
 import Data.Typeable as X

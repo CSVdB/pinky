@@ -20,12 +20,6 @@ import Pinky.Utils
 import qualified Numeric.LinearAlgebra as NLA
 import qualified Numeric.LinearAlgebra.Static as Hmatrix
 
-import qualified Data.Massiv.Array.Manifest as Massiv
-import Data.Massiv.Array.Manifest.Vector (fromVector, toVector)
-import Data.Massiv.Array.Stencil (Stencil(..))
-import Data.Massiv.Core (Array, Comp(..))
-import Data.Massiv.Core.Index (Index(..), Ix1, Ix2(..), Ix3, IxN(..))
-
 data Shape
     = D1 Nat
     | D2 Nat
@@ -124,44 +118,6 @@ trippleListToS xs =
 intToS :: KnownNat n => Int -> Maybe (S ('D1 n))
 intToS = fmap S1D . intToV
 
-s1ToMassiv ::
-       forall n. KnownNat n
-    => S ('D1 n)
-    -> Array Massiv.S Ix1 Double
-s1ToMassiv (S1D (V v)) = fromVector Par (natToInt @n) $ Hmatrix.unwrap v
-
-s2ToMassiv ::
-       forall m n. (KnownNat m, KnownNat n)
-    => S ('D2 m n)
-    -> Array Massiv.S Ix2 Double
-s2ToMassiv (S2D (M m)) =
-    fromVector Par (natToInt @m :. natToInt @n) . NLA.flatten $ Hmatrix.unwrap m
-
-s3ToMassiv ::
-       forall i j k. (KnownNat i, KnownNat j, KnownNat k)
-    => S ('D3 i j k)
-    -> Array Massiv.S Ix3 Double
-s3ToMassiv (S3D (M m)) =
-    fromVector Par (natToInt @i :> natToInt @j :. natToInt @k) . NLA.flatten $
-    Hmatrix.unwrap m
-
-massivToS1 :: KnownNat n => Array Massiv.S Ix1 Double -> Maybe (S ('D1 n))
-massivToS1 = fmap (S1D . V) . Hmatrix.create . toVector
-
-massivToS2 ::
-       forall m n. (KnownNat m, KnownNat n)
-    => Array Massiv.S Ix2 Double
-    -> Maybe (S ('D2 m n))
-massivToS2 =
-    fmap (S2D . M) . Hmatrix.create . NLA.reshape (natToInt @n) . toVector
-
-massivToS3 ::
-       forall i j k. (KnownNat i, KnownNat j, KnownNat k, KnownNat (j * k))
-    => Array Massiv.S Ix3 Double
-    -> Maybe (S ('D3 i j k))
-massivToS3 =
-    fmap (S3D . M) . Hmatrix.create . NLA.reshape (natToInt @(j * k)) . toVector
-
 konstS ::
        forall n. SingI n
     => Double
@@ -171,9 +127,3 @@ konstS x =
         D1Sing SNat -> S1D $ konstV x
         D2Sing SNat SNat -> S2D $ konstM x
         D3Sing SNat SNat SNat -> S3D $ konstM x
-
-instance Prod Double (S ('D1 n)) (S ('D1 n)) where
-    x <#> S1D v = S1D $ x <#> v
-
-instance Prod (S ('D1 n)) (S ('D1 n)) Double where
-    S1D v <#> S1D v' = v <#> v'

@@ -1,10 +1,10 @@
 module Pinky.Utils
     ( module Pinky.CreateRandom
+    , module Pinky.Utils.MyVec
     , module Pinky.Utils.PositiveDouble
     , module Pinky.Utils.PositiveInt
     , module Pinky.Utils.ProperFraction
     , module Pinky.Utils.Proxy
-    , module Pinky.Utils.MyVec
     ) where
 
 import Pinky.CreateRandom

@@ -15,6 +15,7 @@ dependencies:
 - hspec
 - genvalidity >= 0.4.0.4
 - genvalidity-hspec >= 0.5
+- massiv
 - MonadRandom
 - mtl
 - pinky
@@ -35,6 +36,7 @@ library:
   - Test.Pinky.Core.Gen
   - Test.Pinky.Core.LinearAlgebraGen
   - Test.Pinky.Layers.Elu
+  - Test.Pinky.Layers.Convolutional
   - Test.Pinky.Layers.FullyConnected
   - Test.Pinky.Layers.Relu
   - Test.Pinky.Layers.Reshape

@@ -3,6 +3,8 @@
 
 module Test.Pinky.Utils.InstanceSpec where
 
+import Import
+
 import Pinky
 
 import Test.Hspec
@@ -17,3 +19,7 @@ spec = do
     eqSpec @ProperFraction
     ordSpec @ProperFraction
     genValidSpec @ProperFraction
+    genValidSpec @(MyVec 5 Double)
+    functorSpec @(MyVec 5)
+    applicativeSpec @(MyVec 5)
+    monadSpec @(MyVec 5)

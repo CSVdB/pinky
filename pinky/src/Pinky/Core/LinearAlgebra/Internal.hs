@@ -26,11 +26,12 @@ import qualified Numeric.LinearAlgebra.Static as Hmatrix
 
 import Unsafe.Coerce
 
-import qualified Data.Massiv.Array.Manifest as Massiv
-import Data.Massiv.Array.Manifest.Vector (fromVector, toVector)
+import Data.Massiv.Array (Array(..), compute)
+import Data.Massiv.Array.Delayed
+import qualified Data.Massiv.Array.Manifest as Manifest
+import Data.Massiv.Array.Numeric
 import Data.Massiv.Array.Stencil (Stencil(..))
-import Data.Massiv.Core (Array, Comp(..))
-import Data.Massiv.Core.Index (Index(..), Ix1, Ix2(..), Ix3(..))
+import Data.Massiv.Core.Index (Index(..))
 
 instance KnownNat n => Eq (Hmatrix.R n) where
     a == b = Hmatrix.extract a == Hmatrix.extract b
@@ -295,29 +296,32 @@ resizeM matr =
 instance Index ix => Validity (Stencil ix Double Double) where
     validate = trivialValidation
 
-instance (Prod Double a a, Functor f) => Prod Double (f a) (f a) where
+mergeMatrices ::
+       forall m n c.
+       (KnownNat m, KnownNat n, KnownNat c, KnownNat (n * c), 1 <= c)
+    => MyVec c (M m n)
+    -> M m (n * c)
+mergeMatrices vec =
+    let (m, ms) =
+            splitFirst $ (\(M m) -> Hmatrix.unwrap m) <$> vec :: ( NLA.Matrix Double
+                                                                 , [NLA.Matrix Double])
+     in M . fromJust . Hmatrix.create $ foldl' (NLA.|||) m ms
+
+instance Index ix =>
+         Prod Double (Array Manifest.S ix Double) (Array Manifest.S ix Double) where
+    x <#> a = compute $ (*) x <$> delay a
+
+instance Index ix => Plus (Array Manifest.S ix Double) where
+    (<+>) a = compute . (.+) a
+
+instance Index ix => Min (Array Manifest.S ix Double) where
+    (<->) a = compute . (.-) a
+
+instance Prod Double a a => Prod Double (MyVec n a) (MyVec n a) where
     x <#> v = fmap ((<#>) x) v
 
-instance (Applicative f, Plus a) => Plus (f a) where
+instance Plus a => Plus (MyVec n a) where
     (<+>) = liftA2 (<+>)
 
-instance (Applicative f, Min a) => Min (f a) where
+instance Min a => Min (MyVec n a) where
     (<->) = liftA2 (<->)
-
-convolution ::
-       forall x y x' y' k k' s s'.
-       ( KnownNat x
-       , KnownNat x'
-       , KnownNat y
-       , KnownNat y'
-       , KnownNat k
-       , KnownNat k'
-       , s ~ (x + k - k * x')
-       , KnownNat s
-       , s' ~ (y + k' - k' * y')
-       , KnownNat s'
-       )
-    => M x y
-    -> M k k'
-    -> M x' y'
-convolution = undefined

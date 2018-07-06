@@ -1,5 +1,6 @@
 module Pinky.Layers
     ( module Pinky.Layers.Elu
+    ( module Pinky.Layers.Convolutional
     , module Pinky.Layers.FullyConnected
     , module Pinky.Layers.Relu
     , module Pinky.Layers.Reshape
@@ -9,6 +10,7 @@ module Pinky.Layers
     ) where
 
 import Pinky.Layers.Elu
+import Pinky.Layers.Convolutional
 import Pinky.Layers.FullyConnected
 import Pinky.Layers.Relu
 import Pinky.Layers.Reshape

@@ -4,10 +4,12 @@ module Pinky.Core
     , module Pinky.Core.Layer
     , module Pinky.Core.Network
     , module Pinky.Core.LinearAlgebra
+    , module Pinky.Core.Massiv
     ) where
 
 import Pinky.Core.HyperParams
 import Pinky.Core.Layer
 import Pinky.Core.LinearAlgebra
+import Pinky.Core.Massiv
 import Pinky.Core.Network
 import Pinky.Core.Shape

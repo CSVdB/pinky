@@ -1,4 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Test.Pinky.Utils.Gen where
 
@@ -6,6 +8,7 @@ import Import
 import Test.QuickCheck
 
 import Pinky
+import Pinky.Utils.MyVec.Internal
 import Pinky.Utils.PositiveDouble.Internal
 import Pinky.Utils.PositiveInt.Internal
 import Pinky.Utils.ProperFraction.Internal
@@ -34,3 +37,11 @@ instance GenUnchecked ProperFraction where
 
 instance GenValid ProperFraction where
     genValid = ProperFraction <$> choose (0, 1)
+
+instance (KnownNat n, GenUnchecked a) => GenUnchecked (MyVec n a) where
+    genUnchecked = do
+        n' <- oneof [pure $ natToInt @n, (+) 1 . abs <$> genValid]
+        MyVec <$> replicateM n' genUnchecked
+
+instance (KnownNat n, GenValid a) => GenValid (MyVec n a) where
+    genValid = MyVec <$> replicateM (natToInt @n) genUnchecked

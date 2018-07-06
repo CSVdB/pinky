@@ -16,3 +16,4 @@ import Data.Singletons.TypeLits as X
 import Data.Validity as X
 
 import Control.Applicative as X
+import Control.Monad as X

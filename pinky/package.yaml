@@ -38,6 +38,7 @@ library:
   - Pinky.Core.Network
   - Pinky.Core.HyperParams
   - Pinky.Core.HyperParams.Internal
+  - Pinky.Core.Massiv
   - Pinky.Layers
   - Pinky.Layers.Convolutional
   - Pinky.Layers.Elu
@@ -47,6 +48,7 @@ library:
   - Pinky.Layers.Reshape
   - Pinky.Layers.Sigmoid
   - Pinky.Layers.Softmax
+  - Pinky.Utils
   - Pinky.Utils.PositiveDouble
   - Pinky.Utils.PositiveDouble.Internal
   - Pinky.Utils.PositiveInt
@@ -55,6 +57,7 @@ library:
   - Pinky.Utils.ProperFraction.Internal
   - Pinky.Utils.Proxy
   - Pinky.Utils.MyVec
+  - Pinky.Utils.MyVec.Internal
   - Pinky.CreateRandom
   - Pinky.ParamOpt
   - Pinky.ParamOpt.DataSet
