@@ -16,6 +16,7 @@ dependencies:
 - genvalidity >= 0.4.0.4
 - genvalidity-hspec >= 0.5
 - massiv
+- massiv-test-utils
 - MonadRandom
 - mtl
 - pinky
@@ -39,7 +40,7 @@ library:
   - Test.Pinky.Layers.Convolutional
   - Test.Pinky.Layers.FullyConnected
   - Test.Pinky.Layers.Relu
-  - Test.Pinky.Layers.MaxPooling
+  - Test.Pinky.Layers.MaxPool
   - Test.Pinky.Layers.Reshape
   - Test.Pinky.Layers.Resize
   - Test.Pinky.Layers.Sigmoid

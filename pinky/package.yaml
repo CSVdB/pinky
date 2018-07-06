@@ -47,7 +47,8 @@ library:
   - Pinky.Layers.Relu
   - Pinky.Layers.Resize
   - Pinky.Layers.FullyConnected
-  - Pinky.Layers.MaxPooling
+  - Pinky.Layers.MaxPool
+  - Pinky.Layers.MaxPool.Internal
   - Pinky.Layers.Sigmoid
   - Pinky.Layers.Softmax
   - Pinky.Layers.Reshape

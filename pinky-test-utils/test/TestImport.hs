@@ -8,3 +8,5 @@ import TestUtils as X
 
 import Data.Maybe as X
 import Data.Typeable as X
+
+import GHC.TypeLits as X

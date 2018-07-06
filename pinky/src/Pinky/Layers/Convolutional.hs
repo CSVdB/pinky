@@ -53,15 +53,9 @@ import Debug.Trace
 
 data Convolutional :: Nat -> Nat -> Nat -> Nat -> Nat -> Nat -> * where
     Convolutional
-        :: ( KnownNat chanIn
-           , KnownNat chanOut
-           , KnownNat strideX
-           , KnownNat strideY
-           , KnownNat kernelX
-           , KnownNat kernelY
-           )
-        => !(MyVec chanOut (Array Manifest.S Ix2 Double))
-        -> Convolutional chanIn chanOut kernelX kernelY strideX strideY
+        :: ConvConstraints c c' s s' k k'
+        => !(MyVec c' (Array Manifest.S Ix2 Double))
+        -> Convolutional c c' s s' k k'
 
 instance Eq (Convolutional c c' s s' k k') where
     Convolutional kern == Convolutional kern' = kern == kern'
@@ -69,16 +63,16 @@ instance Eq (Convolutional c c' s s' k k') where
 instance Show (Convolutional c c' s s' k k') where
     show (Convolutional kernels) = "Convolutional\n" ++ show kernels
 
+type ConvConstraints chanIn chanOut strideX strideY kernelX kernelY
+     = ( KnownNat chanIn
+       , KnownNat chanOut
+       , KnownNat strideX
+       , KnownNat strideY
+       , KnownNat kernelX
+       , KnownNat kernelY)
+
 genConv ::
-       forall c c' s s' k k' m.
-       ( KnownNat c
-       , KnownNat c'
-       , KnownNat s
-       , KnownNat s'
-       , KnownNat k
-       , KnownNat k'
-       , Monad m
-       )
+       forall c c' s s' k k' m. (ConvConstraints c c' s s' k k', Monad m)
     => Int
     -> Int
     -> m Double
@@ -89,24 +83,12 @@ genConv kernSize kernSize' genDouble =
     genKernel = fromVector Par (kernSize :. kernSize') <$> genVS
     genVS = SV.fromList <$> replicateM (kernSize * kernSize') genDouble
 
-instance ( KnownNat c
-         , KnownNat c'
-         , KnownNat s
-         , KnownNat s'
-         , KnownNat k
-         , KnownNat k'
-         ) =>
+instance ConvConstraints c c' s s' k k' =>
          CreateRandom (Convolutional c c' s s' k k') where
     createRandom seed =
         flip runRand seed $ genConv (natToInt @k) (natToInt @k') getRandom
 
-instance ( KnownNat c
-         , KnownNat c'
-         , KnownNat s
-         , KnownNat s'
-         , KnownNat k
-         , KnownNat k'
-         ) =>
+instance ConvConstraints c c' s s' k k' =>
          UpdateLayer (Convolutional c c' s s' k k') where
     applyGradient (Momentum (Convolutional kernel) (Convolutional kernMom)) (Gradient (Convolutional kernGrad)) hp =
         let (Momentum kernel' kernMom') =
@@ -124,13 +106,8 @@ instance Validity (Convolutional c c' s s' k k') where
             ]
 
 type Constraints c c' s s' k k' x x' y y'
-     = ( KnownNat c
-       , KnownNat c'
+     = ( ConvConstraints c c' s s' k k'
        , 1 <= c'
-       , KnownNat s
-       , KnownNat s'
-       , KnownNat k
-       , KnownNat k'
        , x ~ (s * x' - s + k)
        , KnownNat x
        , KnownNat x'
@@ -140,7 +117,7 @@ type Constraints c c' s s' k k' x x' y y'
        , KnownNat (y * c)
        , KnownNat (y' * c'))
 
-instance (Constraints 1 1 s s' k k' x x' y y') =>
+instance Constraints 1 1 s s' k k' x x' y y' =>
          Layer (Convolutional 1 1 s s' k k') ('D2 x y) ('D2 x' y') where
     type Tape (Convolutional 1 1 s s' k k') ('D2 x y) ('D2 x' y') = S ('D2 x y)
     runForwards conv inpt =
@@ -149,7 +126,7 @@ instance (Constraints 1 1 s s' k k' x x' y y') =>
          in (inpt, reshape outpt')
     runBackwards = undefined
 
-instance (Constraints c 1 s s' k k' x x' y y') =>
+instance Constraints c 1 s s' k k' x x' y y' =>
          Layer (Convolutional c 1 s s' k k') ('D3 x y c) ('D2 x' y') where
     type Tape (Convolutional c 1 s s' k k') ('D3 x y c) ('D2 x' y') = S ('D3 x y c)
     runForwards conv inpt =
@@ -157,7 +134,7 @@ instance (Constraints c 1 s s' k k' x x' y y') =>
          in (inpt, reshape outpt')
     runBackwards = undefined
 
-instance (Constraints 1 c' s s' k k' x x' y y') =>
+instance Constraints 1 c' s s' k k' x x' y y' =>
          Layer (Convolutional 1 c' s s' k k') ('D2 x y) ('D3 x' y' c') where
     type Tape (Convolutional 1 c' s s' k k') ('D2 x y) ('D3 x' y' c') = S ('D2 x y)
     runForwards conv inpt =
@@ -175,14 +152,12 @@ conv ::
     -> M x y
     -> Array Manifest.S Ix2 Double
     -> M x' y'
-conv (strideX :. strideY) startIndex m arr =
+conv (strideX :. strideY) (siX :. siY) m arr =
     fromJust . massivToM . compute . reformDW toNewIndex toOldIndex newSize $
     mapStencil (Fill 0) stencil $ mToMassiv m
   where
-    toNewIndex ix =
-        let (a :. b) = liftIndex2 (-) ix startIndex
-         in a `div` strideX :. b `div` strideY
-    toOldIndex (a :. b) = liftIndex2 (+) startIndex $ strideX * a :. strideY * b
+    toNewIndex (u :. v) = (u - siX) `div` strideX :. (v - siY) `div` strideY
+    toOldIndex (a :. b) = a * strideX + siX :. b * strideY + siY
     newSize = natToInt @x' :. natToInt @y'
     stencil = makeConvolutionStencilFromKernel arr
 
@@ -198,22 +173,14 @@ backConv (s :. s') sz (u :. v) outpt kern =
     makeArray Par sz $ \(a :. b) ->
         sum
             [ (outpt ! i :. j) * (kern ! s * i + u - a :. s' * j + v - b)
-            | i <-
-                  [max (divRoundUp (a - u) s) 0 .. min (divRoundUp (k + a - u) s)
-                                                       x -
-                                                   1]
-            , j <-
-                  [max (divRoundUp (b - v) s') 0 .. min (divRoundUp
-                                                             (k' + b - v)
-                                                             s')
-                                                        y -
-                                                    1]
+            | i <- [max 0 (ceil (a - u) s) .. min x (ceil (k + a - u) s) - 1]
+            , j <- [max 0 (ceil (b - v) s') .. min y (ceil (k' + b - v) s') - 1]
             ]
   where
     (k :. k') = size kern
     (x :. y) = size outpt
 
-instance (Constraints c c' s s' k k' x x' y y') =>
+instance Constraints c c' s s' k k' x x' y y' =>
          Layer (Convolutional c c' s s' k k') ('D3 x y c) ('D3 x' y' c') where
     type Tape (Convolutional c c' s s' k k') ('D3 x y c) ('D3 x' y' c') = S ('D3 x y c)
     runForwards (Convolutional kernels) (S3D inpt) =
