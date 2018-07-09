@@ -17,10 +17,7 @@ module Pinky.Core.Network
     , getGradientOfNetwork
     , applyGradientToNetwork
     , runNetwork
-    , ErrorFunc
-    , sumSquareError
-    , crossEntropyError
-    , exponentialError
+    , ErrorFunc(..)
     ) where
 
 import Import
@@ -29,7 +26,7 @@ import Pinky.Core.HyperParams
 import Pinky.Core.Layer
 import Pinky.Core.LinearAlgebra
 import Pinky.Core.Shape
-import Pinky.CreateRandom
+import Pinky.Utils
 
 import Control.Monad.Trans.Reader
 
@@ -156,9 +153,26 @@ instance ( CreateRandom (Network layers shapes)
     runForwards = runNetwork
     runBackwards = networkGradient
 
-newtype ErrorFunc (o :: Shape) = ErrorFunc
-    { errFunc :: S o -> S o -> S o
-    }
+data ErrorFunc :: Shape -> * where
+    SumSquareError :: ErrorFunc o
+    CrossEntropyError
+        :: (Prod Double (S o) (S o), Prod (S o) (S o) Double, SingI o)
+        => ErrorFunc o
+    ExponentialError
+        :: (Prod (S o) (S o) Double, Prod Double (S o) (S o), SingI o)
+        => PositiveDouble
+        -> ErrorFunc o
+
+instance Show (ErrorFunc o) where
+    show SumSquareError = "SumSquareError"
+    show CrossEntropyError = "CrossEntropyError"
+    show (ExponentialError x) =
+        "ExponentialError with parameters x = " ++ show x
+
+errFunc :: ErrorFunc o -> S o -> S o -> S o
+errFunc SumSquareError = sumSquareError'
+errFunc CrossEntropyError = crossEntropyError'
+errFunc (ExponentialError x) = expError' $ posToDouble x
 
 getGradientOfNetwork ::
        (i ~ Head shapes, o ~ Last shapes)
@@ -168,22 +182,8 @@ getGradientOfNetwork ::
     -> Reader (ErrorFunc o) (Gradient (Network layers shapes))
 getGradientOfNetwork net inpt label = do
     let (!tapes, !outpt) = runNetwork net inpt
-    (ErrorFunc err) <- ask
-    pure $ fst $ networkGradient net tapes $ err outpt label
-
-sumSquareError :: ErrorFunc o
-sumSquareError = ErrorFunc sumSquareError'
-
-crossEntropyError ::
-       (Prod Double (S o) (S o), Prod (S o) (S o) Double, SingI o)
-    => ErrorFunc o
-crossEntropyError = ErrorFunc crossEntropyError'
-
-exponentialError ::
-       (Prod (S o) (S o) Double, Prod Double (S o) (S o), SingI o)
-    => Double
-    -> ErrorFunc o
-exponentialError x = ErrorFunc $ expError' x
+    errorFunction <- ask
+    pure $ fst $ networkGradient net tapes $ (errFunc errorFunction) outpt label
 
 -- The derivative of the cost function as evaluated on output and label
 sumSquareError' :: S o -> S o -> S o

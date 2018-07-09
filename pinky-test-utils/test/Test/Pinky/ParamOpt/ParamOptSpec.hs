@@ -31,7 +31,7 @@ spec = do
             forAllValid $ \inpt ->
                 forAllValid $ \label ->
                     shouldBeValid $
-                    flip runReader sumSquareError $
+                    flip runReader SumSquareError $
                     getGradientOfNetwork net inpt label
     describe
         "runIteration :: Momentum NNet -> DataSet -> State HyperParams NNet" $
@@ -40,7 +40,7 @@ spec = do
             forAllValid $ \dataset ->
                 forAllValid $ \hp ->
                     shouldBeValid $
-                    flip runReader sumSquareError $
+                    flip runReader SumSquareError $
                     flip evalStateT hp $ runIteration momNet dataset
     describe
         "trainNetwork :: Momentum NNet -> DataSet -> Natural -> State HyperParams (Momentum NNet)" $
@@ -50,7 +50,7 @@ spec = do
                 forAllValid $ \epochs ->
                     forAllValid $ \hp ->
                         shouldBeValid $
-                        flip runReader sumSquareError $
+                        flip runReader SumSquareError $
                         flip evalStateT hp $ trainNetwork momNet dataset epochs
     describe "accuracy :: NNet -> DataSet -> ClassificationAccuracy" $
         it "produces valids on valids" $
