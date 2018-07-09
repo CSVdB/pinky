@@ -3,6 +3,7 @@
 module NN.Network
     ( NN
     , params
+    , unsafeConstructHP
     ) where
 
 import NN.Params

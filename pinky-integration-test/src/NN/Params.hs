@@ -1,6 +1,4 @@
-module NN.Params
-    ( params
-    ) where
+module NN.Params where
 
 import Import
 
