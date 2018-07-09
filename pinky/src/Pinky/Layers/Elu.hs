@@ -15,7 +15,7 @@ import Pinky.Utils
 
 import System.Random
 
-data Elu = Elu
+newtype Elu = Elu
     { eluParam :: Double
     } deriving (Show, Eq, Generic)
 

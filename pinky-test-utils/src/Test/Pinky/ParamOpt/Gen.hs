@@ -3,7 +3,7 @@
 module Test.Pinky.ParamOpt.Gen where
 
 import Import
-import Test.Pinky.Utils.Gen ()
+import Test.Pinky.Core.Gen ()
 
 import Pinky
 

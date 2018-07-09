@@ -32,6 +32,7 @@ library:
   default-extensions:
   - NoImplicitPrelude
   exposed-modules:
+  - Test.Pinky.Gen
   - Test.Pinky.Core.Gen
   - Test.Pinky.Core.LinearAlgebraGen
   - Test.Pinky.Layers.Elu
@@ -47,6 +48,7 @@ library:
   - Test.Pinky.Spec.Layer
   - Test.Pinky.Spec.Gen
   - Test.Pinky.Utils.Gen
+  - Test.Pinky.HyperOpt.Gen
   other-modules:
   - Import
   - Utils
@@ -74,3 +76,4 @@ tests:
     - Test.Pinky.Layers.LayerSpec
     - Test.Pinky.ParamOpt.ParamOptSpec
     - Test.Pinky.ParamOpt.InstanceSpec
+    - Test.Pinky.HyperOpt.TrainSpec

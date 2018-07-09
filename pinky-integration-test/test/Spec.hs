@@ -42,9 +42,9 @@ spec :: Spec
 spec =
     describe "MNIST" $ do
         it "unit test network training with sumSquareError" $
-            nnMnistTest 0.81 sumSquareError
+            nnMnistTest 0.81 SumSquareError
         it "unit test network training with crossEntropyError" $
-            nnMnistTest 0.79 crossEntropyError
+            nnMnistTest 0.79 CrossEntropyError
         -- Put the following tests back once you implemented automated
         -- hyperparameter optimisation.
         --it "unit test network training with exponentialError" $

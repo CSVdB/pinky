@@ -101,3 +101,9 @@ instance GenUnchecked x => GenUnchecked (Momentum x) where
 
 instance GenValid x => GenValid (Momentum x) where
     genValid = Momentum <$> genValid <*> genValid
+
+instance GenUnchecked (ErrorFunc o) where
+    genUnchecked = pure SumSquareError
+    shrinkUnchecked = const []
+
+instance GenValid (ErrorFunc o)

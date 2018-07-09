@@ -76,7 +76,7 @@ applyGradientToNetwork ::
     -> Gradient (Network ls ss)
     -> HyperParams
     -> Momentum (Network ls ss)
-applyGradientToNetwork empty@(Momentum EmptyNet EmptyNet) _ _ = empty
+applyGradientToNetwork x@(Momentum EmptyNet EmptyNet) _ _ = x
 applyGradientToNetwork (Momentum (AppendNet layer net) (AppendNet layerMom netMom)) (Gradient (AppendNet gradLayer gradNet)) hp =
     let Momentum newLayer newLayerMomentum =
             applyGradient (Momentum layer layerMom) (Gradient gradLayer) hp
@@ -169,6 +169,12 @@ instance Show (ErrorFunc o) where
     show (ExponentialError x) =
         "ExponentialError with parameters x = " ++ show x
 
+instance Validity (ErrorFunc o) where
+    validate SumSquareError = valid
+    validate CrossEntropyError = valid
+    validate (ExponentialError x) =
+        delve "The ExponentialError ErrorFunc contains a valid PositiveDouble" x
+
 errFunc :: ErrorFunc o -> S o -> S o -> S o
 errFunc SumSquareError = sumSquareError'
 errFunc CrossEntropyError = crossEntropyError'
@@ -183,7 +189,7 @@ getGradientOfNetwork ::
 getGradientOfNetwork net inpt label = do
     let (!tapes, !outpt) = runNetwork net inpt
     errorFunction <- ask
-    pure $ fst $ networkGradient net tapes $ (errFunc errorFunction) outpt label
+    pure . fst . networkGradient net tapes $ errFunc errorFunction outpt label
 
 -- The derivative of the cost function as evaluated on output and label
 sumSquareError' :: S o -> S o -> S o

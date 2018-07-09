@@ -7,6 +7,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE ConstraintKinds #-}
 
 module Pinky.HyperOpt.Train where
 
@@ -24,20 +25,25 @@ import Control.Monad.Random.Lazy
 import Control.Monad.State.Lazy
 import Control.Monad.Trans.Reader
 
+import Data.Function (on)
+
 import Data.Singletons.Prelude (Head, Last)
 
-runHyperParam ::
-       forall (layers :: [*]) shapes i o m.
-       ( i ~ Head shapes
+type HyperOptCondition net layers shapes i o m
+     = ( i ~ Head shapes
        , o ~ Last shapes
        , SingI o
-       , CreateRandom (Network layers shapes)
-       , MonadRandom m
-       )
+       , CreateRandom net
+       , net ~ Network layers shapes
+       , MonadRandom m)
+
+runHyperParams ::
+       forall net i o m (layers :: [*]) shapes.
+       HyperOptCondition net layers shapes i o m
     => HyperParams
     -> SearchInfo i o
     -> m ClassificationAccuracy
-runHyperParam hp (SearchInfo errorFunc epochs trainData valData) = do
+runHyperParams hp (SearchInfo errorFunc epochs trainData valData) = do
     net <- createRandomM @m @(Momentum (Network layers shapes))
     let Momentum trainedNet _ =
             flip runReader errorFunc $
@@ -49,6 +55,14 @@ data UpdateHyperParams = UpdateHyperParams
     , decayRateExp :: Double -- ^ exponent for possible change in decay rate
     , batchSizeFactor :: Natural -- ^ factor for possible change in batchSize
     } deriving (Show, Eq, Generic)
+
+instance Validity UpdateHyperParams where
+    validate (UpdateHyperParams x y n) =
+        mconcat
+            [ declare "paramExp > 0" $ x > 0
+            , declare "decayRateExp > 0" $ y > 0
+            , declare "batchSizeFactor > 0" $ n > 0
+            ]
 
 updateHyperParams ::
        PositiveDouble -> PositiveDouble -> PositiveInt -> UpdateHyperParams
@@ -87,60 +101,81 @@ genHP hp uhp = do
         Right r -> pure r
 
 localSearchHyperOptIter ::
-       forall (layers :: [*]) shapes i o m.
-       ( i ~ Head shapes
-       , o ~ Last shapes
-       , SingI o
-       , CreateRandom (Network layers shapes)
-       , MonadRandom m
-       )
+       forall net i o m layers shapes. HyperOptCondition net layers shapes i o m
     => HyperParams
     -> SearchInfo i o
     -> UpdateHyperParams
     -> m (HyperParams, ClassificationAccuracy)
 localSearchHyperOptIter hp si uhp = do
     hp' <- genHP hp uhp
-    (hp', ) <$> runHyperParam @layers @shapes hp' si
+    (hp', ) <$> runHyperParams @net hp' si
 
 data SearchInfo (i :: Shape) (o :: Shape) = SearchInfo
     { sErrorFunc :: ErrorFunc o
     , sEpochs :: Natural
     , sTrainSet :: DataSet i o
     , sValSet :: DataSet i o
-    } deriving (Generic)
+    } deriving (Generic, Show)
+
+instance Validity (SearchInfo i o)
 
 data LocalSearchArgs (i :: Shape) (o :: Shape) = LocalSearchArgs
+    { lsInfo :: SearchInfo i o
+    , lsMinAcc :: ClassificationAccuracy -- ^ desired accuracy
+    , lsaUhp :: UpdateHyperParams
+    , lsaUhpDecay :: UpdateHyperParams
+    } deriving (Generic, Show)
+
+instance Validity (LocalSearchArgs i o)
+
+data RandomSearchArgs (i :: Shape) (o :: Shape) = RandomSearchArgs
     { rsInfo :: SearchInfo i o
-    , rsMinAcc :: ClassificationAccuracy -- ^ desired accuracy
     , rsaUhp :: UpdateHyperParams
-    , rsaUhpDecay :: UpdateHyperParams
-    } deriving (Generic)
+    } deriving (Generic, Show)
+
+instance Validity (RandomSearchArgs i o)
 
 localSearchHyperOpt ::
-       forall (layers :: [*]) shapes i o.
+       forall net i o layers shapes m.
        ( i ~ Head shapes
        , o ~ Last shapes
        , SingI o
-       , CreateRandom (Network layers shapes)
+       , CreateRandom net
+       , net ~ Network layers shapes
+       , MonadRandom m
        )
     => (HyperParams, ClassificationAccuracy)
     -> Natural -- ^ maximal number of hyperparameter sets tested
     -> LocalSearchArgs i o
-    -> IO (HyperParams, ClassificationAccuracy)
-localSearchHyperOpt init maxIter rsa@(LocalSearchArgs si minAcc uhp uhpDecay) =
+    -> m (HyperParams, ClassificationAccuracy)
+localSearchHyperOpt init maxIter lsa@(LocalSearchArgs si minAcc uhp uhpDecay) =
     ifThenElse (snd init > minAcc) (pure init) $
     case minusNaturalMaybe maxIter 1 of
         Nothing -> pure init
         Just iterLeft -> do
-            result <- localSearchHyperOptIter @layers @shapes (fst init) si uhp
+            result <- localSearchHyperOptIter @net (fst init) si uhp
             if result == init
-                then localSearchHyperOpt @layers @shapes init iterLeft rsa
-                else localSearchHyperOpt @layers @shapes init iterLeft newRsa
+                then localSearchHyperOpt @net init iterLeft lsa
+                else localSearchHyperOpt @net init iterLeft newLsa
   where
     uhpNew (UpdateHyperParams x y z) (UpdateHyperParams xDecay yDecay zDecay) =
         UpdateHyperParams (x / xDecay) (y / yDecay) $ z `div` zDecay
-    newRsa = rsa {rsaUhp = uhpNew uhp uhpDecay}
+    newLsa = lsa {lsaUhp = uhpNew uhp uhpDecay}
 
 ifThenElse :: Bool -> a -> a -> a
 ifThenElse True a _ = a
 ifThenElse False _ a = a
+
+randomSearchHyperOpt ::
+       forall net i o layers shapes m. HyperOptCondition net layers shapes i o m
+    => HyperParams
+    -> Natural -- ^ number of hyperparameter sets tested
+    -> RandomSearchArgs i o
+    -> m (HyperParams, ClassificationAccuracy)
+randomSearchHyperOpt initHp iter rsa@(RandomSearchArgs si uhp) = do
+    hps <- replicateM (fromIntegral iter) $ genHP initHp uhp
+    couples <- traverse toTuple hps
+    pure $ maximumBy (compare `on` snd) couples
+  where
+    toTuple :: HyperParams -> m (HyperParams, ClassificationAccuracy)
+    toTuple hp = (hp, ) <$> runHyperParams @net hp si
